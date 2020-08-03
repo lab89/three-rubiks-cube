@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>THREE JS RUBIKS CUBE</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r119/three.min.js"></script>
+        <script src="js/OrbitControls.js"></script>
+        <script src="js/CSS3DRenderer.js"></script>
+        <script src="js/THREERubiksCube.js"></script>
+        <style>
+            body {
+                margin : 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+        <script>
+            var camera, scene, renderer, controls;
+            init();
+            animate();
+            
+            function init(){
+                camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
+                camera.position.x = 1761;
+                camera.position.z = 1769;
+                camera.position.y = 1526;
+
+                scene = new THREE.Scene();
+
+                renderer = new THREE.CSS3DRenderer();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                document.getElementById("container").appendChild(renderer.domElement);
+
+                // const operationsTag = document.createElement("div")
+                // operationsTag.innerHTML = "aaaaa"
+                // Object.assign(operationsTag.style, {
+                //         fontSize : "80px",
+                //         width: "50px",
+                //         height: "22px",
+                //         display: "inline-block",
+                //         wordWrap : "break-woard"
+                // })
+                // const operationsText = new THREE.CSS3DObject(operationsTag)
+                // operationsText.rotation.x = -1.575;
+                // operationsText.position.x = -220;
+                // operationsText.position.z = 1050;
+                // operationsText.position.y = -160;
+                // operationsText.name = 'text';
+                // scene.add(operationsText)
+
+                const test = new THREE.RubiksCube();
+                scene.add(test);
+                console.log(test);
+
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableZoom = true;
+                controls.enablePan = false;
+                controls.minDistance = 500;
+                controls.maxDistance = 6000;
+                controls.addEventListener("change", function (e) {
+                    console.log("change");
+                });
+            }
+
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+
+                renderer.setSize(window.innerWidth, window.innerHeight);
+
+                render();
+            }
+
+            function animate(time) {
+                requestAnimationFrame(animate);
+                controls.update();
+                render();
+            }
+
+            function render() {
+                renderer.render(scene, camera);
+            }
+        </script>
+    </body>
+</html>
