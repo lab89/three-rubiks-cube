@@ -19,12 +19,12 @@
             var camera, scene, renderer, controls;
             init();
             animate();
-            
+
             function init(){
                 camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
-                camera.position.x = 1761;
-                camera.position.z = 1769;
-                camera.position.y = 1526;
+                camera.position.x = 1000;
+                camera.position.z = 1000;
+                camera.position.y = 1000;
 
                 scene = new THREE.Scene();
 
@@ -49,7 +49,21 @@
                 // operationsText.name = 'text';
                 // scene.add(operationsText)
 
-                const test = new THREE.RubiksCube();
+                const test = new THREE.RubiksCube({
+                  stickerColorSet : {
+	                  "F": "rgba(23, 158, 82, 1)",
+	                  "B": "rgba(6, 44, 179, 1)",
+	                  "L": "rgba(231, 30, 38, 1)",
+	                  "R": "rgba(253, 116, 35, 1)",
+	                  "U": "rgba(233, 244, 250, 1)",
+	                  "D": "rgba(244, 227, 49, 1)",
+                  },
+                  size : {
+                  	width : 300,
+                    height : 300,
+                    depth : 300
+                  }
+                });
                 scene.add(test);
                 console.log(test);
 
