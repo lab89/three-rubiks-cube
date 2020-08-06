@@ -1,377 +1,139 @@
+//Object.assing polyfill
+if (typeof Object.assign != 'function') {
+	// Must be writable: true, enumerable: false, configurable: true
+	Object.defineProperty(Object, "assign", {
+		value: function assign(target, varArgs) { // .length of function is 2
+			'use strict';
+			if (target == null) { // TypeError if undefined or null
+				throw new TypeError('Cannot convert undefined or null to object');
+			}
+			
+			var to = Object(target);
+			
+			for (var index = 1; index < arguments.length; index++) {
+				var nextSource = arguments[index];
+				
+				if (nextSource != null) { // Skip over if undefined or null
+					for (var nextKey in nextSource) {
+						// Avoid bugs when hasOwnProperty is shadowed
+						if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+							to[nextKey] = nextSource[nextKey];
+						}
+					}
+				}
+			}
+			return to;
+		},
+		writable: true,
+		configurable: true
+	});
+}
+
 // THREE exist check
 // THREE CSS3DObject exist check
 
 /**
 * param
- * stickerColorSet : {
- *  "F" :
- *  "B" :
- *  "L" :
- *  "R" :
- *  "U" :
- *  "D" :
- *  },
+ *  blockColor : "",
  *  size : {
  *    width :
  *    height :
  *    depth :
  *  }
 * */
-THREE.RubiksCube = function RubiksCube(options){
-    THREE.CSS3DObject.apply(this, [document.createElement("div")]);
-    
-    // create cube
-  
-    //create cubelet
-    function makeBlock(width, height, depth, blockColor){
-        const blockTag = document.createElement("div");
-        const block = new THREE.CSS3DObject(blockTag);
-        
-        const fb = document.createElement("div");
-        Object.assign(fb.style, {
-            width : width + "px",
-            height : height + "px",
-            // backgroundColor : cubeletColor
-            border : "1px dashed " + blockColor
-        });
-        let sticker = document.createElement("div");
-        Object.assign(sticker.style, {
-            width : "300px",
-            height : "300px",
-            backgroundColor : "red",
-	          borderBottomRightRadius : "150px"
-        });
-        
-        const front = new THREE.CSS3DObject(fb.cloneNode(false).appendChild(sticker));
-        front.position.z += (depth / 2);
-	      block.add(front);
-	      front.name = "front";
-	
-	      sticker = document.createElement("div");
-        // Object.assign(sticker.style, {
-        //     width : "300px",
-        //     height : "300px",
-        //     backgroundColor : "blue",
-	      //     borderBottomRightRadius : "150px"
-        // });
-        const back = new THREE.CSS3DObject(fb.cloneNode(false).appendChild(sticker));
-	      back.position.z -= (depth / 2);
-	      block.add(back);
-	      back.name = "back";
-	    
-	      const tb = document.createElement("div");
-	      Object.assign(tb.style, {
-	          width : width + "px",
-            height : depth + "px",
-		        border : "1px dashed " + blockColor
-        });
-        sticker = document.createElement("div");
-        Object.assign(sticker.style, {
-            width : "300px",
-            height : "300px",
-            backgroundColor : "cyan",
-	          borderBottomRightRadius : "150px"
-        });
-	      const top = new THREE.CSS3DObject(tb.cloneNode(false).appendChild(sticker));
-	      top.rotateX(90 * Math.PI / 180);
-	      top.position.y += (height / 2);
-	      top.name = "top";
-	      block.add(top);
-	
-	      sticker = document.createElement("div");
-        // Object.assign(sticker.style, {
-        // width : "300px",
-        // height : "300px",
-        // backgroundColor : "green",
-        // borderBottomRightRadius : "150px"
-        // });
-	      const bottom = new THREE.CSS3DObject(tb.cloneNode(false).appendChild(sticker));
-        bottom.position.y -= (height / 2);
-	      bottom.rotateX(90 * Math.PI / 180);
-	      block.add(bottom);
-	      bottom.name = "top";
-	      
-	      const lr = document.createElement("div");
-	      Object.assign(lr.style, {
-	          width : depth + "px",
-            height : height + "px",
-            border : "1px dashed " + blockColor
-        });
-        sticker = document.createElement("div");
-        Object.assign(sticker.style, {
-            width : "300px",
-            height : "300px",
-            backgroundColor : "purple",
-	          borderBottomRightRadius : "150px"
-        });
-	      const left = new THREE.CSS3DObject(lr.cloneNode(false).appendChild(sticker));
-	      left.position.x -= (width / 2);
-	      left.rotateY(90 * Math.PI / 180);
-	      left.name = "left";
-	      block.add(left);
-	
-        sticker = document.createElement("div");
-        // Object.assign(sticker.style, {
-        // width : "300px",
-        // height : "300px",
-        // backgroundColor : "gray",
-	      //   borderBottomRightRadius : "150px"
-        // });
-        const right = new THREE.CSS3DObject(lr.cloneNode(false).appendChild(sticker));
-	      right.position.x += (width / 2);
-	      right.rotateY(-90 * Math.PI / 180);
-	      block.add(right);
-	      right.name = "right";
-	      
-        return block;
-    }
-	  function makeBlock2(width, height, depth, blockColor){
-		const blockTag = document.createElement("div");
-		const block = new THREE.CSS3DObject(blockTag);
-		
-		const fb = document.createElement("div");
-		Object.assign(fb.style, {
-			width : width + "px",
-			height : height + "px",
-			// backgroundColor : cubeletColor
-			border : "1px dashed " + blockColor
-		});
-		let sticker = document.createElement("div");
-		Object.assign(sticker.style, {
-			width : "300px",
-			height : "300px",
-			backgroundColor : "red",
-			borderBottomLeftRadius : "150px"
-		});
-		
-		const front = new THREE.CSS3DObject(fb.cloneNode(false).appendChild(sticker));
-		front.position.z += (depth / 2);
-		block.add(front);
-		front.name = "front";
-		
-		sticker = document.createElement("div");
-		// Object.assign(sticker.style, {
-		//     width : "300px",
-		//     height : "300px",
-		//     backgroundColor : "blue",
-		//     borderBottomRightRadius : "150px"
-		// });
-		const back = new THREE.CSS3DObject(fb.cloneNode(false).appendChild(sticker));
-		back.position.z -= (depth / 2);
-		block.add(back);
-		back.name = "back";
-		
-		const tb = document.createElement("div");
-		Object.assign(tb.style, {
-			width : width + "px",
-			height : depth + "px",
-			border : "1px dashed " + blockColor
-		});
-		sticker = document.createElement("div");
-		Object.assign(sticker.style, {
-			width : "300px",
-			height : "300px",
-			backgroundColor : "cyan",
-			borderBottomLeftRadius : "150px"
-		});
-		const top = new THREE.CSS3DObject(tb.cloneNode(false).appendChild(sticker));
-		top.rotateX(90 * Math.PI / 180);
-		top.position.y += (height / 2);
-		top.name = "top";
-		block.add(top);
-		
-		sticker = document.createElement("div");
-		// Object.assign(sticker.style, {
-		// width : "300px",
-		// height : "300px",
-		// backgroundColor : "green",
-		// borderBottomRightRadius : "150px"
-		// });
-		const bottom = new THREE.CSS3DObject(tb.cloneNode(false).appendChild(sticker));
-		bottom.position.y -= (height / 2);
-		bottom.rotateX(90 * Math.PI / 180);
-		block.add(bottom);
-		bottom.name = "top";
-		
-		const lr = document.createElement("div");
-		Object.assign(lr.style, {
-			width : depth + "px",
-			height : height + "px",
-			border : "1px dashed " + blockColor
-		});
-		sticker = document.createElement("div");
-		// Object.assign(sticker.style, {
-		// 	width : "300px",
-		// 	height : "300px",
-		// 	backgroundColor : "purple",
-		// 	borderBottomRightRadius : "150px"
-		// });
-		const left = new THREE.CSS3DObject(lr.cloneNode(false).appendChild(sticker));
-		left.position.x -= (width / 2);
-		left.rotateY(90 * Math.PI / 180);
-		left.name = "left";
-		block.add(left);
-		
-		sticker = document.createElement("div");
-		Object.assign(sticker.style, {
-        width : "300px",
-        height : "300px",
-        backgroundColor : "gray",
-        borderBottomLeftRadius : "150px"
-		});
-		const right = new THREE.CSS3DObject(lr.cloneNode(false).appendChild(sticker));
-		right.position.x += (width / 2);
-		right.rotateY(-90 * Math.PI / 180);
-		block.add(right);
-		right.name = "right";
-		
-		return block;
-	}
-	  function makeBlock3(width, height, depth, blockColor){
-		const blockTag = document.createElement("div");
-		const block = new THREE.CSS3DObject(blockTag);
-		
-		const fb = document.createElement("div");
-		Object.assign(fb.style, {
-			width : width + "px",
-			height : height + "px",
-			// backgroundColor : cubeletColor
-			border : "1px dashed " + blockColor
-		});
-		let sticker = document.createElement("div");
-		// Object.assign(sticker.style, {
-		// 	width : "300px",
-		// 	height : "300px",
-		// 	backgroundColor : "red",
-		// 	borderBottomLeftRadius : "150px"
-		// });
-		
-		const front = new THREE.CSS3DObject(fb.cloneNode(false).appendChild(sticker));
-		front.position.z += (depth / 2);
-		block.add(front);
-		front.name = "front";
-		
-		sticker = document.createElement("div");
-		Object.assign(sticker.style, {
-		    width : "300px",
-		    height : "300px",
-		    backgroundColor : "blue",
-			  borderBottomRightRadius : "150px"
-		});
-		const back = new THREE.CSS3DObject(fb.cloneNode(false).appendChild(sticker));
-		back.position.z -= (depth / 2);
-		block.add(back);
-		back.name = "back";
-		
-		const tb = document.createElement("div");
-		Object.assign(tb.style, {
-			width : width + "px",
-			height : depth + "px",
-			border : "1px dashed " + blockColor
-		});
-		sticker = document.createElement("div");
-		Object.assign(sticker.style, {
-			width : "300px",
-			height : "300px",
-			backgroundColor : "cyan",
-			borderTopRightRadius : "150px"
-		});
-		const top = new THREE.CSS3DObject(tb.cloneNode(false).appendChild(sticker));
-		top.rotateX(90 * Math.PI / 180);
-		top.position.y += (height / 2);
-		top.name = "top";
-		block.add(top);
-		
-		sticker = document.createElement("div");
-		// Object.assign(sticker.style, {
-		// width : "300px",
-		// height : "300px",
-		// backgroundColor : "green",
-		// borderBottomRightRadius : "150px"
-		// });
-		const bottom = new THREE.CSS3DObject(tb.cloneNode(false).appendChild(sticker));
-		bottom.position.y -= (height / 2);
-		bottom.rotateX(90 * Math.PI / 180);
-		block.add(bottom);
-		bottom.name = "top";
-		
-		const lr = document.createElement("div");
-		Object.assign(lr.style, {
-			width : depth + "px",
-			height : height + "px",
-			border : "1px dashed " + blockColor
-		});
-		sticker = document.createElement("div");
-		Object.assign(sticker.style, {
-			width : "300px",
-			height : "300px",
-			backgroundColor : "purple",
-			borderBottomLeftRadius : "150px"
-		});
-		const left = new THREE.CSS3DObject(lr.cloneNode(false).appendChild(sticker));
-		left.position.x -= (width / 2);
-		left.rotateY(90 * Math.PI / 180);
-		left.name = "left";
-		block.add(left);
-		
-		sticker = document.createElement("div");
-		// Object.assign(sticker.style, {
-		// 	width : "300px",
-		// 	height : "300px",
-		// 	backgroundColor : "gray",
-		// 	borderBottomLeftRadius : "150px"
-		// });
-		const right = new THREE.CSS3DObject(lr.cloneNode(false).appendChild(sticker));
-		right.position.x += (width / 2);
-		right.rotateY(-90 * Math.PI / 180);
-		block.add(right);
-		right.name = "right";
-		
-		return block;
-	}
-    /**
-     * x : -1 (left) , 0 , 1(right)
-     * y : -1 (top), 0, 1(bottom)
-     * z : -1 (front), 0, 1(back)
-     * */
-    /**
-     *
-    */
-		// [-1, 0, 1].forEach((y)=>{
-    //     [-1, 0, 1].forEach((x)=>{
-    //         [-1, 0, 1].forEach((z)=>{
-	  //           const block = makeBlock(options.size.width, options.size.height, options.size.depth, "black");
-	  //           block.position.x = x * options.size.width;
-	  //           block.position.y = y * options.size.height;
-	  //           block.position.z = z * options.size.depth;
-	  //           block.userData.orientation = new THREE.Vector3(x, y, z);
-	  //           this.add(block);
-    //         })
-    //     })
-    // });
-    const block = makeBlock(options.size.width, options.size.height, options.size.depth, "black");
-	  this.add(block);
-	  
-	  const block2 =makeBlock2(options.size.width, options.size.height, options.size.depth, "black")
-	  this.add(block2);
-	  block2.position.x = 600;
-	
-    const block3 =makeBlock3(options.size.width, options.size.height, options.size.depth, "black")
-    this.add(block3);
-    block3.position.z = -600;
-    // //
-	  // const block2 = makeBlock(options.size.width, options.size.height, options.size.depth, "black");
-    // block2.rotateX(90* Math.PI / 180);
-    // block2.rotateY(90* Math.PI / 180);
-    // block2.rotateZ(90* Math.PI / 180);
-    // block2.position.x = 600;
-    // this.add(block2);
-    
-  //top left front
-    let blk = null;
-    const tlf = document.createElement("div");
-	  blk = new THREE.CSS3DObject(tlf);
-	  
-}
-THREE.RubiksCube.prototype = Object.create(THREE.CSS3DObject.prototype);
+THREE.RubiksCube = function RubiksCube(){
+    THREE.Group.apply(this);
+};
+THREE.RubiksCube.prototype = Object.create(THREE.Group.prototype);
 THREE.RubiksCube.prototype.constructor = THREE.RubiksCube;
+THREE.RubiksCube.prototype.createBlock =  function createBlock(options, orientation){
+	const commonStyle = {
+		position: "absolute",
+		// backgroundColor: "black",
+		borderRadius : "30px",
+		width: options.size.width + "px",
+		border : "1px dashed black",
+		height: options.size.height + "px",
+	};
+	
+	const blockElement = document.createElement("div");
+	blockElement.style.position = "absolute";
+	blockElement.style.display = "block";
+	blockElement.style.transformStyle = "preserve-3d";
+	
+	
+	const faceElement = document.createElement("div");
+	Object.assign(faceElement.style, commonStyle);
+	// const sticker = faceElement.cloneNode(false);
+	// sticker.style.backgroundColor = "cyan";
+	// sticker.style.borderBottomRightRadius = "150px";
+	// faceElement.appendChild(sticker);
+	
+	/** top - down face **/
+	const top = faceElement.cloneNode(true);
+	top.style.transform = "translateY(" + (options.size.height * -1 / 2) + "px) rotate3d(1, 0, 0, 90deg) ";
+	// top.style.backgroundColor = "green";
+	blockElement.appendChild(top);
+	
+	const down = faceElement.cloneNode(true);
+	down.style.transform = "translateY(" + (options.size.height / 2) + "px) rotate3d(1, 0, 0, -90deg) ";
+	// down.style.backgroundColor = "red";
+	blockElement.appendChild(down);
+	
+	/** left - right face **/
+	const left = faceElement.cloneNode(true);
+	left.style.transform = "translateX(" +  (options.size.width * -1 / 2) + "px)  rotate3d(0, 1, 0, 90deg)";
+	// left.style.backgroundColor = "cyan";
+	blockElement.appendChild(left);
+	
+	const right = faceElement.cloneNode(true);
+	right.style.transform = "translateX(" +  (options.size.width  / 2) + "px)  rotate3d(0, 1, 0, -90deg)";
+	// right.style.backgroundColor = "blue";
+	blockElement.appendChild(right);
+	
+	
+	/** front - back face **/
+	const front =  faceElement.cloneNode(true);
+	front.style.transform = "translateZ(" +  (options.size.depth  / 2) + "px) rotate3d(0, 1, 0, 0deg)";
+	// front.style.backgroundColor = "black";
+	blockElement.appendChild(front);
+	
+	const back =  faceElement.cloneNode(true);
+	back.style.transform = "translateZ(" +  (options.size.depth  * -1 / 2) + "px)  rotate3d(0, 1, 0, -180deg)";
+	// back.style.backgroundColor = "gray";
+	blockElement.appendChild(back);
+	
+	// blockElement.style.transform =
+	// 	"rotateZ(" + (Math.sign(orientation.x) * 180 * Math.PI / 180) + "deg)"
+		// + "rotateY(" + (Math.sign(orientation.y) * 180 * Math.PI / 180) + "deg)"
+		// +"rotateZ(" + (Math.sign(orientation.z) * 180 * Math.PI / 180); + "deg)"
+	
+	
+	const block = new THREE.CSS3DObject(blockElement);
+	// block.rotateOnAxis(new THREE.Vector3(1, 0, 0) , 90 * orientation.x *Math.PI / 180 );
+	// block.rotateOnAxis(new THREE.Vector3(0, 1, 0) , 90 * orientation.y *Math.PI / 180 );
+	// block.rotateOnAxis(new THREE.Vector3(0, 0, 1) , 90 * orientation.z *Math.PI / 180 );
+	Object.assign(block.userData, {"orientation": orientation.clone()});
+	
+	return block;
+};
+
+
+THREE.GANCube333 = function(options){
+	THREE.RubiksCube.apply(this, [document.createElement("div")]);
+	[-1, 0, 1].forEach((y)=>{
+	    [-1, 0, 1].forEach((x)=>{
+	        [-1, 0, 1].forEach((z)=>{
+		        const block = this.createBlock(options, new THREE.Vector3(x, y , z));
+		        block.position.x = x * options.size.width;
+		        block.position.y = y * options.size.height;
+		        block.position.z = z * options.size.depth;
+		        block.userData.orientation = new THREE.Vector3(x, y, z);
+		        this.add(block);
+	        })
+	    })
+	});
+	
+};
+THREE.GANCube333.prototype = Object.create(THREE.RubiksCube.prototype);
+THREE.GANCube333.prototype.constructor = THREE.GANCube333;

@@ -49,24 +49,18 @@
                 // operationsText.name = 'text';
                 // scene.add(operationsText)
 
-                const test = new THREE.RubiksCube({
-                  stickerColorSet : {
-	                  "F": "rgba(23, 158, 82, 1)",
-	                  "B": "rgba(6, 44, 179, 1)",
-	                  "L": "rgba(231, 30, 38, 1)",
-	                  "R": "rgba(253, 116, 35, 1)",
-	                  "U": "rgba(233, 244, 250, 1)",
-	                  "D": "rgba(244, 227, 49, 1)",
-                  },
-                  size : {
-                  	width : 300,
-                    height : 300,
-                    depth : 300
-                  }
+                const cube = new THREE.GANCube333(
+                  {
+                    blockColor : "black",
+                    size : {
+                        width : 300,
+                        height : 300,
+                        depth : 300
+                    }
                 });
-                console.log(test.getObjectByName('front'));
-                scene.add(test);
-                console.log(test);
+
+                scene.add(cube);
+                console.log(cube);
 
                 controls = new THREE.OrbitControls(camera, renderer.domElement);
                 controls.enableZoom = true;
