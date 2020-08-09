@@ -30,13 +30,68 @@ if (typeof Object.assign != 'function') {
 }
 // THREE exist check
 // THREE CSS3DObject exist check
+THREE.NNNCubeEventDispatcher = function(){
+    this._listeners = {};
+}
+THREE.NNNCubeEventDispatcher.prototype = {
+    addEventListener: function ( type, listener ) {
+        if ( this._listeners === undefined ) { this._listeners = {}; }
+        var listeners = this._listeners;
+        if ( listeners[ type ] === undefined ) {
+            listeners[ type ] = [];
+        }
+        if ( listeners[ type ].indexOf( listener ) === - 1 ) {
+            listeners[ type ].push( listener );
+        }
+    },
+
+    hasEventListener: function ( type, listener ) {
+        if ( this._listeners === undefined ) { return false; }
+        var listeners = this._listeners;
+        return listeners[ type ] !== undefined && listeners[ type ].indexOf( listener ) !== - 1;
+    },
+
+    removeEventListener: function ( type, listener ) {
+        if ( this._listeners === undefined ) { return; }
+        var listeners = this._listeners;
+        var listenerArray = listeners[ type ];
+        if ( listenerArray !== undefined ) {
+            var index = listenerArray.indexOf( listener );
+            if ( index !== - 1 ) {
+                listenerArray.splice( index, 1 );
+            }
+        }
+    },
+
+    dispatchEvent: function ( event ) {
+
+        if ( this._listeners === undefined ) { return; }
+        var listeners = this._listeners;
+        var listenerArray = listeners[ event.type ];
+        if ( listenerArray !== undefined ) {
+            event.target = this;
+            // Make a copy, in case listeners are removed while iterating.
+            var array = listenerArray.slice( 0 );
+            for ( var i = 0, l = array.length; i < l; i ++ ) {
+                array[ i ].call( this, event );
+            }
+        }
+    },
+    destroy : function(){
+        this._listeners = [];
+    }
+}
 
 THREE.NNNCube = function MagicCube(){
-	THREE.Group.apply(this);		
+	THREE.Group.apply(this);	
+	this.operationGroup = new THREE.Group();	
 };
 THREE.NNNCube.prototype = Object.create(THREE.Group.prototype);
 THREE.NNNCube.prototype.constructor = THREE.NNNCube; 
-
+THREE.NNNCube.prototype.ready = function ready(scene){
+	scene.add(this);
+	scene.add(this.operationGroup);
+}
 THREE.Cube333 = function Cube333(options){
 	THREE.NNNCube.apply(this);
 	this._options = options;	
@@ -85,7 +140,7 @@ THREE.Cube333.prototype.createBlock = function createBlock(options, orientation)
 		height: options.size.height + "px",
 	};
 	
-	const blockElement = document.createElement("div");
+	const blockElement = document.createElement("div");	
 	blockElement.style.position = "absolute";
 	blockElement.style.display = "block";
 	blockElement.style.transformStyle = "preserve-3d";
@@ -153,7 +208,94 @@ THREE.Cube333.prototype.createBlock = function createBlock(options, orientation)
 
 	return block;
 }
+THREE.Cube333.prototype.parseOperations = function parseOperations(operations){
+	const operationArray = [];
 
+	function parse(operation) {
+		for (let i = 0; i < operation.length; i++) {
+			if (operation[i] === "'" || operation[i] === '2') operationArray[operationArray.length - 1] += "'"
+			else operationArray.push(operation[i])
+		}
+	}
+	parse(operations)
+	return operationArray;
+}
+THREE.Cube333.prototype.operation = function getOperationBlockGroup(operationString){
+	if(this.operationGroup.children.length){				
+		while(this.operationGroup.children.length){
+			this.attach(this.operationGroup.children[this.operationGroup.children.length - 1])			
+		}			
+	}
+	let axis
+	if(operationString === "R"){
+		this.children
+		.filter(function(child){ return Math.sign(child.position.x) === 1;})
+		.forEach(function(child){this.operationGroup.add(child)}.bind(this))	
+		axis = new THREE.Vector3(1, 0, 0)
+	}else if(operationString === "L"){
+		this.children
+		.filter(function(child){ return Math.sign(child.position.x) === -1;})
+		.forEach(function(child){this.operationGroup.add(child)}.bind(this))
+		axis = new THREE.Vector3(-1, 0, 0)
+	}else if(operationString === "F"){
+		this.children
+		.filter(function(child){ return Math.sign(child.position.z) === -1;})
+		.forEach(function(child){this.operationGroup.add(child)}.bind(this))
+		axis = new THREE.Vector3(0, 0, -1)
+	}else if(operationString === "B"){
+		this.children
+		.filter(function(child){ return Math.sign(child.position.z) === 1;})
+		.forEach(function(child){this.operationGroup.add(child)}.bind(this))
+		axis = new THREE.Vector3(0, 0, 1)
+	}else if(operationString === "U"){
+		this.children
+		.filter(function(child){ return Math.sign(child.position.y) === -1;})
+		.forEach(function(child){this.operationGroup.add(child)}.bind(this))
+		axis = new THREE.Vector3(0, 1, 0)
+	}else if(operationString === "D"){
+		this.children
+		.filter(function(child){ return Math.sign(child.position.y) === 1;})
+		.forEach(function(child){this.operationGroup.add(child)}.bind(this))
+		axis = new THREE.Vector3(0, -1, 0)
+	}else if(operationString === "M"){
+		this.children
+		.filter(function(child){ return Math.sign(child.position.z) === 0;})
+		.forEach(function(child){this.operationGroup.add(child)}.bind(this))
+		axis = new THREE.Vector3(0, 0, 1)
+	}else if(operationString === "E"){
+		this.children
+		.filter(function(child){ return Math.sign(child.position.y) === 0;})
+		.forEach(function(child){this.operationGroup.add(child)}.bind(this))
+		axis = new THREE.Vector3(0, 1, 0)
+	}else if(operationString === "S"){
+		this.children
+		.filter(function(child){ return Math.sign(child.position.x) === 0;})
+		.forEach(function(child){this.operationGroup.add(child)}.bind(this))
+		axis = new THREE.Vector3(1, 0, 0)
+	}else if(operationString === "x"){
+		this.children		
+		.forEach(function(child){this.operationGroup.add(child)}.bind(this))
+		axis = new THREE.Vector3(1, 0, 0)
+	}
+	else if(operationString === "y"){
+		this.children		
+		.forEach(function(child){this.operationGroup.add(child)}.bind(this))
+		axis = new THREE.Vector3(0, 1, 0)
+	}else if(operationString === "z"){
+		this.children		
+		.forEach(function(child){this.operationGroup.add(child)}.bind(this))
+		axis = new THREE.Vector3(0, 0, 1)
+	}
+	let angle = 90
+	if(operationString.includes("'")){
+		angle = angle * -1;
+	}
+	return {
+		group : this.operationGroup,
+		angle : angle,
+		axis : axis
+	}
+}
 
 /**
 * param
@@ -221,6 +363,7 @@ THREE.GANCube333.prototype.attachSticker = function attachSticker(realCoord, sti
 			}	
 
 			const sticker = document.createElement("div");
+			sticker.className = "sticker";
 			Object.assign(sticker.style, style)
 			face[0].appendChild(sticker);
 		}				

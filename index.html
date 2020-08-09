@@ -7,9 +7,14 @@
         <script src="js/OrbitControls.js"></script>
         <script src="js/CSS3DRenderer.js"></script>
         <script src="js/THREERubiksCube.js"></script>
+        <script src="js/tween.umd.js"></script>
         <style>
             body {
                 margin : 0;
+            }
+            #container {
+                width : 100px;
+                height : 100px;
             }
         </style>
     </head>
@@ -70,8 +75,34 @@
                     fitment : "fully_fitted"
                 });
 
-                scene.add(cube);
-                console.log(cube);
+                // console.log(cube.parseOperations("R'URU"));
+                // const R = cube.children.filter(function(child){
+                //     return Math.sign(child.position.x) === 1;
+                // })
+                // console.log(R);
+                // const testGroup = new THREE.Group();
+                // scene.add(testGroup);
+                // R.forEach(function(block){
+                //     testGroup.attach(block);
+                // })
+                // testGroup.rotateOnAxis(new THREE.Vector3(1, 0, 0), 90 * Math.PI / 180);
+                // console.log(testGroup.children.map(function(child){ return child.position}))
+
+                
+                
+                cube.ready(scene);                
+                
+                const operationGroup = cube.operation("L");				
+                // const angle = {radian: 0}
+                // const tween = 
+                // new TWEEN.Tween(angle)
+                // .delay(300)
+                // .to({radian: 90}, 1000)
+                // .easing(TWEEN.Easing.Quadratic.Out) // Use an easing function to make the animation smooth.
+                // .onUpdate(() => {
+                //     operationGroup.group.setRotationFromAxisAngle(operationGroup.axis, angle.radian * Math.PI / 180)
+                // }).start();					
+                
 
                 controls = new THREE.OrbitControls(camera, renderer.domElement);
                 controls.enableZoom = true;
@@ -95,6 +126,7 @@
             function animate(time) {
                 requestAnimationFrame(animate);
                 controls.update();
+                TWEEN.update(time)
                 render();
             }
 
