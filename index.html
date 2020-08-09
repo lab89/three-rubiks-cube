@@ -49,6 +49,8 @@
                 // operationsText.name = 'text';
                 // scene.add(operationsText)
 
+
+                
                 const cube = new THREE.GANCube333(
                   {
                     blockColor : "black",
@@ -56,7 +58,16 @@
                         width : 300,
                         height : 300,
                         depth : 300
-                    }
+                    },
+                    stickerColorSet : {
+                        "f": "rgba(42, 249, 107, 1)", //녹
+			            "b": "rgba(5, 34, 174, 1)", //파
+			            "l": "rgba(225, 10, 28, 1)", //빨
+			            "r": "rgba(252, 77, 30, 1)", //주
+			            "u": "rgba(230, 245, 252, 1)", //흰
+			            "d": "rgba(235, 253, 57, 1)",  //노      
+                    },
+                    fitment : "fully_fitted"
                 });
 
                 scene.add(cube);
