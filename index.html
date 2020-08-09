@@ -100,6 +100,23 @@
                 cube.ready(scene);                
                 
                 const operationGroup = cube.operation("L");				
+
+                //custom animation demonstrator..
+                var start = null;
+                function step(timestamp) {
+                    if (!start) start = timestamp;
+                    var progress = timestamp - start;                
+                    if (progress <= 1000) {
+                        console.log((Math.ceil(progress) / 1000) * 90);
+                        operationGroup.group.setRotationFromAxisAngle(operationGroup.axis, (Math.ceil(progress) / 1000) * 90 * Math.PI / 180)
+                        window.requestAnimationFrame(step);
+                    }else{
+                        
+                        return;
+                    }
+                }
+                
+                window.requestAnimationFrame(step);
                 // const angle = {radian: 0}
                 // const tween = 
                 // new TWEEN.Tween(angle)
