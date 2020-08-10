@@ -81,11 +81,11 @@ THREE.Cube333 = function Cube333(options){
 	this.operationsArray = [];
 
 	this.addEventListener("operation", function(event){
-		if(event.index > this.operationsArray.length - 1) return;
-		const operationInfo = this.operationInfo(this.operationsArray[event.index]);
-		// console.log("===========================")
-		// console.log(this.operationGroup.children.length)
-		// console.log("===========================")
+		if(event.index > this.operationsArray.length - 1) {
+			this.dispatchEvent({type : "operationCompleted"})
+			return
+		};
+		const operationInfo = this.operationInfo(this.operationsArray[event.index]);		
 		function inOutQuad(n){
 			n *= 2;
 			if (n < 1) return 0.5 * n * n;
@@ -96,9 +96,7 @@ THREE.Cube333 = function Cube333(options){
 			if (!start) start = timestamp;
 			const progress = timestamp - start;
 			if (progress <= 1000) {
-				// console.log((Math.ceil(progress) / 1000) * 90);
-				this.operationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);
-				
+				this.operationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);				
 				window.requestAnimationFrame(animation.bind(this));
 			}else{
 				this.operator(this.operationsArray[event.index], this.operationGroup);
@@ -166,6 +164,8 @@ THREE.Cube333.prototype.createBlock = function createBlock(options, orientation)
 	const xplane =  faceElement.cloneNode(true);
 	xplane.className = "z";
 	xplane.style.borderRadius = "0px"
+	xplane.style.width = options.size.width * 0.9 + "px";
+	xplane.style.height = options.size.height * 0.9 + "px";
 	xplane.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)" + "rotate3d(1, 0, 0, -90deg) ";
 	blockElement.appendChild(xplane);
 
@@ -174,12 +174,16 @@ THREE.Cube333.prototype.createBlock = function createBlock(options, orientation)
 	yplane.className = "y";
 	yplane.style.borderRadius = "0px"
 	yplane.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)";
+	yplane.style.width = options.size.width * 0.9 + "px";
+	yplane.style.height = options.size.height * 0.9 + "px";
 	blockElement.appendChild(yplane);
 
 	const zplane =  faceElement.cloneNode(true);
 	zplane.className = "x";
 	zplane.style.borderRadius = "0px"
 	zplane.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)" + "rotate3d(0, 1, 0, 90deg) ";
+	zplane.style.width = options.size.width * 0.9 + "px";
+	zplane.style.height = options.size.height * 0.9 + "px";
 	blockElement.appendChild(zplane);
 	
 	const block = new THREE.CSS3DObject(blockElement);
@@ -257,12 +261,12 @@ THREE.Cube333.prototype.parseOperations = function parseOperations(operations){
 	return parse(operations);
 }
 THREE.Cube333.prototype.operationInfo = function getOperationBlockGroup(operationString){
-	let epsilon = 1;
 	if(this.operationGroup.children.length){
 		while(this.operationGroup.children.length){
 			this.attach(this.operationGroup.children[this.operationGroup.children.length - 1])
 		}
 	}
+
 	let axis;
 	let angle = 90;
 	if(operationString === "R"){
@@ -315,7 +319,11 @@ THREE.Cube333.prototype.operationInfo = function getOperationBlockGroup(operatio
 		this.children
 		.filter(function(child){ 
 			return (child.name.match(/x/g) || []).length === 1 
-			&& (/(?=.*f)(?=.*u).*/.test(child.name) || /(?=.*u)(?=.*b).*/.test(child.name) || /(?=.*d)(?=.*b).*/.test(child.name) || /(?=.*d)(?=.*f).*/.test(child.name)) || ((child.name.match(/x/g) || []).length === 2 && (/f|u|b|d/.test(child.name)))}) 
+			&& (
+				/(?=.*f)(?=.*u).*/.test(child.name) 
+				|| /(?=.*u)(?=.*b).*/.test(child.name) 
+				|| /(?=.*d)(?=.*b).*/.test(child.name) 
+				|| /(?=.*d)(?=.*f).*/.test(child.name)) || ((child.name.match(/x/g) || []).length === 2 && (/f|u|b|d/.test(child.name)))}) 
 		.forEach(function(child){this.operationGroup.add(child)}.bind(this));
 		axis = new THREE.Vector3(1, 0, 0);
 		angle = 90;
@@ -372,7 +380,7 @@ THREE.Cube333.prototype.operationInfo = function getOperationBlockGroup(operatio
 		axis : axis
 	}
 }
-THREE.Cube333.prototype.animator = function animator(operations){
+THREE.Cube333.prototype.animate = function animate(operations){
 	this.operationsArray = this.parseOperations(operations);
 	this.dispatchEvent({ type: 'operation', index: 0 })
 };
@@ -423,7 +431,7 @@ THREE.GANCube333.prototype.attachSticker = function attachSticker(realCoord, sti
 	const style = {
 		width : this._options.fitment === "fully_fitted" ? "97%" : "90%",
 		height : this._options.fitment === "fully_fitted" ? "97%" : "90%",
-		margin : this._options.fitment === "fully_fitted" ? "2px" : "8px",
+		margin : this._options.fitment === "fully_fitted" ? "5px" : "8px",
 		borderRadius : "30px"
 	};
 	const element = block.element;
