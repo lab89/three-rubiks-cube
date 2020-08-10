@@ -34,49 +34,6 @@ if (typeof Object.assign != 'function') {
 THREE.NNNCube = function MagicCube(){
 	THREE.Group.apply(this);
 	this.operationGroup = new THREE.Group();
-	this.operationsArray = [];
-	/***
-	 * U operation, Y operation. E operation
-	 * r -> f - > l -> b
-	 * D operation
-	 * f -> r -> b -> l
-	 * R operation, X operation, S operation
-	 * f -> u -> b -> d
-	 * L operation
-	 * f -> d -> b - > u
-	 * F operation, Z operation, M operation
-	 * l -> u -> r -> d
-	 * B operation
-	 * u -> r -> d -> l
-	 */
-	this.addEventListener("operation", function(event){
-		if(event.index > this.operationsArray.length - 1) return;
-		const operationInfo = this.operationInfo(this.operationsArray[event.index]);
-		// console.log("===========================")
-		// console.log(this.operationGroup.children.length)
-		// console.log("===========================")
-		function inOutQuad(n){
-			n *= 2;
-			if (n < 1) return 0.5 * n * n;
-			return - 0.5 * (--n * (n - 2) - 1);
-		};
-		let start = null;
-		function animation(timestamp){
-			if (!start) start = timestamp;
-			const progress = timestamp - start;
-			if (progress <= 1000) {
-				// console.log((Math.ceil(progress) / 1000) * 90);
-				this.operationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);
-				
-				window.requestAnimationFrame(animation.bind(this));
-			}else{
-				this.dispatchEvent({type : "operation", index : event.index + 1});
-				return;
-			}
-		}
-		window.requestAnimationFrame(animation.bind(this));
-	}.bind(this))
-	
 };
 THREE.NNNCube.prototype = Object.create(THREE.Group.prototype);
 THREE.NNNCube.prototype.constructor = THREE.NNNCube;
@@ -120,6 +77,38 @@ THREE.Cube333 = function Cube333(options){
 			block.position.z = coordVector.z * options.size.depth;
 		}.bind(this))
 	}.bind(this))
+
+	this.operationsArray = [];
+
+	this.addEventListener("operation", function(event){
+		if(event.index > this.operationsArray.length - 1) return;
+		const operationInfo = this.operationInfo(this.operationsArray[event.index]);
+		// console.log("===========================")
+		// console.log(this.operationGroup.children.length)
+		// console.log("===========================")
+		function inOutQuad(n){
+			n *= 2;
+			if (n < 1) return 0.5 * n * n;
+			return - 0.5 * (--n * (n - 2) - 1);
+		};
+		let start = null;
+		function animation(timestamp){
+			if (!start) start = timestamp;
+			const progress = timestamp - start;
+			if (progress <= 1000) {
+				// console.log((Math.ceil(progress) / 1000) * 90);
+				this.operationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);
+				
+				window.requestAnimationFrame(animation.bind(this));
+			}else{
+				this.operator(this.operationsArray[event.index], this.operationGroup);
+				this.dispatchEvent({type : "operation", index : event.index + 1});
+				return;
+			}
+		}
+		window.requestAnimationFrame(animation.bind(this));
+	}.bind(this))
+	
 }
 THREE.Cube333.prototype = Object.create(THREE.NNNCube.prototype);
 THREE.Cube333.prototype.constructor = THREE.Cube333;
@@ -200,92 +189,162 @@ THREE.Cube333.prototype.createBlock = function createBlock(options, orientation)
 
 	return block;
 }
-THREE.Cube333.prototype.parseOperations = function parseOperations(operations){
-	const operationArray = [];
+THREE.Cube333.prototype.operator = function operator(operation, operationGroup){
+		/***
+	 * U operation, Y operation. E operation
+	 * r -> f - > l -> b
+	 * D operation
+	 * f -> r -> b -> l
+	 * R operation, X operation, S operation
+	 * f -> u -> b -> d
+	 * L operation
+	 * f -> d -> b - > u
+	 * F operation, Z operation, M operation
+	 * l -> u -> r -> d
+	 * B operation
+	 * u -> r -> d -> l
+	 */
+	const operations = {
+		"U" : ["r", "f", "l", "b"],
+		"y" : ["r", "f", "l", "b"],
+		"E" : ["f", "r", "b", "l"],
+		"D" : ["f", "r", "b", "l"],
+		"R" : ["f", "u", "b", "d"],
+		"x" : ["f", "u", "b", "d"],
+		"S" : ["l", "u", "r", "d"],
+		"L" : ["f", "d", "b", "u"],
+		"F" : ["l", "u", "r", "d"],
+		"Z" : ["l", "u", "r", "d"],
+		"M" : ["f", "d", "b", "u"],
+		"B" : ["u", "r", "d", "l"]
+	}
+
+	const oprs = operations[operation];
+	const isDouble = operation.includes("2") ? 2 : 1;
+	const isAntiCock = operation.includes("'") ? -1 : 1;
+
+	operationGroup.children.forEach(function(block){		
+		console.log("before : ", block.name)
+		let name = ""
+		Array.from(block.name).forEach(function(string, i){
+			const index = oprs.indexOf(string);			
+			if(index > -1){
+				const newIndex = (index + isDouble) * isAntiCock;
+				const finalIndex = newIndex % oprs.length;
+				name += oprs[finalIndex]
+			}else{
+				name += string
+			}
+		})		
+		console.log("after : ", name);
+		block.name = name;
+	})
+
+
+	
+}
+THREE.Cube333.prototype.parseOperations = function parseOperations(operations){	
 
 	function parse(operation) {
+		const array = []
 		for (let i = 0; i < operation.length; i++) {
-			if (operation[i] === "'" || operation[i] === '2') operationArray[operationArray.length - 1] += operation[i]
-			else operationArray.push(operation[i])
+			if (operation[i] === "'" || operation[i] === '2') array[array.length - 1] += array[i]
+			else array.push(operation[i])
 		}
+		return array;
 	}
-	parse(operations);
-	return operationArray;
+	
+	return parse(operations);
 }
 THREE.Cube333.prototype.operationInfo = function getOperationBlockGroup(operationString){
 	let epsilon = 1;
 	if(this.operationGroup.children.length){
 		while(this.operationGroup.children.length){
-			const block = this.operationGroup.children[this.operationGroup.children.length - 1];
-			// if(block.position.x < epsilon && block.position.x > -epsilon) block.position.x = 0;
-			// if(block.position.y < epsilon && block.position.y > -epsilon) block.position.y = 0;
-			// if(block.position.z < epsilon && block.position.z > -epsilon) block.position.z = 0;
-			// if(block.position.x < 300 + epsilon && block.position.x > 300 - epsilon) block.position.x = 300;
-			// if(block.position.y < 300 + epsilon && block.position.y > 300 - epsilon) block.position.y = 300;
-			// if(block.position.z < 300 + epsilon && block.position.z > 300 - epsilon) block.position.z = 300;
-			// if(block.position.x < -300 + epsilon && block.position.x > -300 - epsilon) block.position.x = -300;
-			// if(block.position.y < -300 + epsilon && block.position.y > -300 - epsilon) block.position.y = -300;
-			// if(block.position.z < -300 + epsilon && block.position.z > -300 - epsilon) block.position.z = -300;
 			this.attach(this.operationGroup.children[this.operationGroup.children.length - 1])
 		}
 	}
 	let axis;
 	let angle = 90;
-	console.log(this.operationGroup.children.length);
 	if(operationString === "R"){
 		this.children
-		.filter(function(child){ return Math.sign(child.position.x ) === 1;})
+		.filter(function(child){ return Array.from(child.name).includes("r")})
 		.forEach(function(child){this.operationGroup.add(child)}.bind(this));
 		axis = new THREE.Vector3(1, 0, 0);
 		angle = -90;
 	}else if(operationString === "L"){
 		this.children
-		.filter(function(child){ return Math.sign(child.position.x) === -1;})
+		.filter(function(child){ return Array.from(child.name).includes("l");})
 		.forEach(function(child){this.operationGroup.add(child)}.bind(this));
 		axis = new THREE.Vector3(-1, 0, 0);
-		angle = -90;
+		angle = 90;
 	}else if(operationString === "F"){
 		this.children
-		.filter(function(child){ return Math.sign(child.position.z) === -1;})
+		.filter(function(child){ return Array.from(child.name).includes("f");})
 		.forEach(function(child){this.operationGroup.add(child)}.bind(this));
 		axis = new THREE.Vector3(0, 0, -1);
 		angle = 90;
 	}else if(operationString === "B"){
 		this.children
-		.filter(function(child){ return Math.sign(child.position.z) === 1;})
+		.filter(function(child){ return Array.from(child.name).includes("b");})
 		.forEach(function(child){this.operationGroup.add(child)}.bind(this));
 		axis = new THREE.Vector3(0, 0, 1);
 		angle = -90;
 	}else if(operationString === "U"){
 		this.children
-		.filter(function(child){ return Math.sign(child.position.y) === 1;})
+		.filter(function(child){ return Array.from(child.name).includes("u")})
 		.forEach(function(child){this.operationGroup.add(child)}.bind(this));
 		
 		axis = new THREE.Vector3(0, 1, 0);
 		angle = -90;
 	}else if(operationString === "D"){
 		this.children
-		.filter(function(child){ return Math.sign(child.position.y) === -1;})
+		.filter(function(child){ return Array.from(child.name).includes("d");})
 		.forEach(function(child){this.operationGroup.add(child)}.bind(this));
 		axis = new THREE.Vector3(0, -1, 0);
 		angle = 90;
 	}else if(operationString === "M"){
+		/***
+		 * ["lxf", "rxf", "rxb", "lxb"],
+		["xdf", "rdx", "xdb", "ldx"],
+		["xuf", "rux", "xub", "lux"],
+		["xxf", "rxx", "xxb", "lxx"],
+		["xux"],
+		["xdx"]
+		 * 
+		 */
 		this.children
-		.filter(function(child){ return Math.sign(child.position.z) === 0;})
+		.filter(function(child){ 
+			return (child.name.match(/x/g) || []).length === 1 
+			&& (/(?=.*f)(?=.*u).*/.test(child.name) || /(?=.*u)(?=.*b).*/.test(child.name) || /(?=.*d)(?=.*b).*/.test(child.name) || /(?=.*d)(?=.*f).*/.test(child.name)) || ((child.name.match(/x/g) || []).length === 2 && (/f|u|b|d/.test(child.name)))}) 
 		.forEach(function(child){this.operationGroup.add(child)}.bind(this));
-		axis = new THREE.Vector3(0, 0, 1);
+		axis = new THREE.Vector3(1, 0, 0);
 		angle = 90;
 	}else if(operationString === "E"){
 		this.children
-		.filter(function(child){ return Math.sign(child.position.y) === 0;})
-		.forEach(function(child){this.operationGroup.add(child)}.bind(this));
+		.filter(function(child){ 
+			return (child.name.match(/x/g) || []).length === 1 
+			&& 
+			(
+				/(?=.*f)(?=.*r).*/.test(child.name) 
+				|| /(?=.*r)(?=.*b).*/.test(child.name) 
+				|| /(?=.*b)(?=.*l).*/.test(child.name) 
+				|| /(?=.*l)(?=.*f).*/.test(child.name)) || ((child.name.match(/x/g) || []).length === 2 && (/r|b|l|f/.test(child.name)))}) 
+			.forEach(function(child){this.operationGroup.add(child)}.bind(this));
 		axis = new THREE.Vector3(0, 1, 0);
 		angle = 90;
 	}else if(operationString === "S"){
 		this.children
-		.filter(function(child){ return Math.sign(child.position.x) === 0;})
+		.filter(function(child){ 
+			return (child.name.match(/x/g) || []).length === 1 
+			&& 
+			(
+				/(?=.*u)(?=.*r).*/.test(child.name) 
+				|| /(?=.*r)(?=.*d).*/.test(child.name) 
+				|| /(?=.*d)(?=.*l).*/.test(child.name) 
+				|| /(?=.*l)(?=.*u).*/.test(child.name)) || ((child.name.match(/x/g) || []).length === 2 && (/r|u|l|d/.test(child.name)))}) 
+
 		.forEach(function(child){this.operationGroup.add(child)}.bind(this));
-		axis = new THREE.Vector3(1, 0, 0);
+		axis = new THREE.Vector3(0, 0, 1);
 		angle = 90;
 	}else if(operationString === "x"){
 		this.children
@@ -307,7 +366,6 @@ THREE.Cube333.prototype.operationInfo = function getOperationBlockGroup(operatio
 	if(operationString.includes("'")){
 		angle = angle * -1;
 	}
-	console.log(this.operationGroup.children.length);
 	
 	return {
 		angle : angle,
@@ -316,10 +374,7 @@ THREE.Cube333.prototype.operationInfo = function getOperationBlockGroup(operatio
 }
 THREE.Cube333.prototype.animator = function animator(operations){
 	this.operationsArray = this.parseOperations(operations);
-	let operationIndex = 0;
-	// console.log(this.operationsArray);
 	this.dispatchEvent({ type: 'operation', index: 0 })
-	
 };
 /**
 * param
