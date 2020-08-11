@@ -1,0 +1,38 @@
+{
+  "name": "THREE.RubiksCube",
+  "version": "1.0.0",
+  "description": "a extension THREE.CSS3DObject for making rubik's cube",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack -w",
+    "start": "webpack-dev-server --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lab89/THREE.RubiksCube.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lab89/THREE.RubiksCube/issues"
+  },
+  "homepage": "https://github.com/lab89/THREE.RubiksCube#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.1",
+    "@babel/preset-env": "^7.11.0",
+    "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "html-webpack-plugin": "^4.3.0",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.10.4",
+    "three": "^0.119.1",
+    "three-css3drenderer": "^1.0.1"
+  }
+}
