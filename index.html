@@ -97,10 +97,13 @@
 
 
 
-                cube.ready(scene);
+                scene.add(cube);
                 console.log(cube);
 
-                cube.animate("FMES")
+                cube.animate("FF'F2")
+                cube.addEventListener("operationCompleted", function(){
+                	alert("complete")
+                })
                 //custom animation demonstrator..
                 // var start = null;
                 // function step(timestamp) {
