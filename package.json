@@ -1,5 +1,5 @@
 {
-  "name": "THREE.RubiksCube",
+  "name": "three-rubiks-cube",
   "version": "1.0.0",
   "description": "a extension THREE.CSS3DObject for making rubik's cube",
   "scripts": {

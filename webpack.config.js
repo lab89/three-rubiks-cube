@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 module.exports = {
-  entry: ['@babel/polyfill', './src/main.js'],
+  entry: ['@babel/polyfill', './src/RubiksCube.js'],
   plugins : [
     new HtmlWebpackPlugin({
         title : 'output'
