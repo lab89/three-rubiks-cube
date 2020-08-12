@@ -2,7 +2,6 @@
   "name": "THREE.RubiksCube",
   "version": "1.0.0",
   "description": "a extension THREE.CSS3DObject for making rubik's cube",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack -w",
@@ -12,11 +11,21 @@
     "type": "git",
     "url": "git+https://github.com/lab89/THREE.RubiksCube.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "CSS 3D", "THREE", "THREEJS", "rubiks cube", "rubicks cube", "css 3d", "threejs", "cube", "css3d cube", "css3d rubiks cube"
+  ],
+  "author": {
+    "name" : "cfop",
+    "url" : "ttps://github.com/lab89"
+  },
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/lab89/THREE.RubiksCube/issues"
+  },
+  "main" : "dist/RubiksCube.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lab89/THREE.RubiksCube.git"
   },
   "homepage": "https://github.com/lab89/THREE.RubiksCube#readme",
   "devDependencies": {

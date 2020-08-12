@@ -1,21 +1,23 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-module.exports = {  
+module.exports = {
   entry: ['@babel/polyfill', './src/main.js'],
   plugins : [
     new HtmlWebpackPlugin({
         title : 'output'
     }),
     new CleanWebpackPlugin(),
-  ],  
+  ],
   devtool: 'inline-source-map',
   devServer : {
       contentBase : './dist'
   },
   output: {
-    path: path.resolve(__dirname, 'dist/js'),
-    filename: 'RubiksCube.js'
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'RubiksCube.js',
+    libraryTarget : 'umd',
+    library : "RubiksCube"
   },
   module: {
     rules: [

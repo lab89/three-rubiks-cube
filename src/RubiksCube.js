@@ -1,6 +1,5 @@
-import * as THREE from 'three'
-import CSS3DObject from 'three-css3drenderer'
-
+var THREE = require('three');
+var CSS3DObject = require('three-css3drenderer')
 const NNNCube = function NNNCube(){
 	THREE.Group.apply(this);
 };
@@ -435,4 +434,4 @@ RubiksCube.prototype.attachSticker = function attachSticker(realCoord, stickerCo
 	}.bind(this))
 };
 
-export default RubiksCube;
+export { RubiksCube };
