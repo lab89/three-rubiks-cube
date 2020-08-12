@@ -9,24 +9,29 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lab89/THREE.RubiksCube.git"
+    "url": "https://github.com/lab89/THREE.RubiksCube.git"
   },
   "keywords": [
-    "CSS 3D", "THREE", "THREEJS", "rubiks cube", "rubicks cube", "css 3d", "threejs", "cube", "css3d cube", "css3d rubiks cube"
+    "CSS 3D",
+    "THREE",
+    "THREEJS",
+    "rubiks cube",
+    "rubicks cube",
+    "css 3d",
+    "threejs",
+    "cube",
+    "css3d cube",
+    "css3d rubiks cube"
   ],
   "author": {
-    "name" : "cfop",
-    "url" : "ttps://github.com/lab89"
+    "name": "cfop",
+    "url": "ttps://github.com/lab89"
   },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/lab89/THREE.RubiksCube/issues"
   },
-  "main" : "dist/RubiksCube.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/lab89/THREE.RubiksCube.git"
-  },
+  "main": "dist/RubiksCube.js",
   "homepage": "https://github.com/lab89/THREE.RubiksCube#readme",
   "devDependencies": {
     "@babel/cli": "^7.10.5",
