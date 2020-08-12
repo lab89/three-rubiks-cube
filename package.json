@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lab89/THREE.RubiksCube.git"
+    "url": "https://github.com/lab89/three-rubiks-cube.git"
   },
   "keywords": [
     "CSS 3D",
@@ -29,10 +29,10 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lab89/THREE.RubiksCube/issues"
+    "url": "https://github.com/lab89/three-rubiks-cube/issues"
   },
   "main": "dist/RubiksCube.js",
-  "homepage": "https://github.com/lab89/THREE.RubiksCube#readme",
+  "homepage": "https://github.com/lab89/three-rubiks-cube#readme",
   "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.11.1",
