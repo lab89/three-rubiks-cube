@@ -1,4 +1,4 @@
 node_modules/
-.map.js
+*.map.js
 dist/
 example/node_modules/

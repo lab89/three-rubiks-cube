@@ -1,5 +1,6 @@
 node_modules/
-example/
+examples/
+example/node_modules/
 webpack.*.js
 LICENSE.md
 README.md
