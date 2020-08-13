@@ -1,6 +1,5 @@
-import "@babel/polyfill";
 import * as THREE from 'three';
-import {CSS3DObject} from 'three-css3drenderer'
+import {CSS3DObject} from 'three/examples/jsm/renderers/CSS3DRenderer'
 const NNNCube = function NNNCube(){
 	THREE.Group.apply(this);
 };
@@ -38,6 +37,7 @@ const Cube333 = function Cube333(options){
 			const coordVector = new THREE.Vector3(this.coordInfo[coords[0]], this.coordInfo[coords[1]], this.coordInfo[coords[2]]);
 			const block = this.createBlock(options, coordVector);
 			this.add(block);
+			console.log(block instanceof CSS3DObject);
 			block.name = coordString; //init coord String
 			block.position.x = coordVector.x * options.size.width;
 			block.position.y = -coordVector.y * options.size.height;
@@ -124,13 +124,13 @@ Cube333.prototype.createBlock = function createBlock(options, orientation){
 	blockElement.appendChild(front);
 	
 	const back =  faceElement.cloneNode(true);
-	back.className = "b"
+	back.className = "b";
 	back.style.transform = "translateX("+ (-options.size.width / 2) + "px)"  + "translateZ(" +  (options.size.depth  * -1 / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)" +  "rotate3d(0, 1, 0, -180deg)";
 	blockElement.appendChild(back);
 
 	const xplane =  faceElement.cloneNode(true);
 	xplane.className = "z";
-	xplane.style.borderRadius = "0px"
+	xplane.style.borderRadius = "0px";
 	xplane.style.width = options.size.width * 0.9 + "px";
 	xplane.style.height = options.size.height * 0.9 + "px";
 	xplane.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)" + "rotate3d(1, 0, 0, -90deg) ";
@@ -139,7 +139,7 @@ Cube333.prototype.createBlock = function createBlock(options, orientation){
 	// see through block plane
 	const yplane =  faceElement.cloneNode(true);
 	yplane.className = "y";
-	yplane.style.borderRadius = "0px"
+	yplane.style.borderRadius = "0px";
 	yplane.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)";
 	yplane.style.width = options.size.width * 0.9 + "px";
 	yplane.style.height = options.size.height * 0.9 + "px";
@@ -147,16 +147,14 @@ Cube333.prototype.createBlock = function createBlock(options, orientation){
 
 	const zplane =  faceElement.cloneNode(true);
 	zplane.className = "x";
-	zplane.style.borderRadius = "0px"
+	zplane.style.borderRadius = "0px";
 	zplane.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)" + "rotate3d(0, 1, 0, 90deg) ";
 	zplane.style.width = options.size.width * 0.9 + "px";
 	zplane.style.height = options.size.height * 0.9 + "px";
 	blockElement.appendChild(zplane);
 	
 	const block = new CSS3DObject(blockElement);
-	Object.assign(block.userData, {"orientation": orientation.clone()});
-	
-	block.rotateOnAxis(new THREE.Vector3(0, 1, 0), this.children.length * 90 * Math.PI / 180)
+	block.rotateOnAxis(new THREE.Vector3(0, 1, 0), this.children.length * 90 * Math.PI / 180);
 
 	return block;
 };

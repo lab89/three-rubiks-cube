@@ -1,3 +1,4 @@
 node_modules/
 .map.js
 dist/
+example/node_modules/
