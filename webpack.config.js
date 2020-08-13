@@ -1,9 +1,19 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+
 module.exports = {
   entry: ['@babel/polyfill', './src/RubiksCube.js'],
   plugins : [
     new CleanWebpackPlugin(),
+    new CopyPlugin({
+      patterns: [
+        { 
+          from: 'dist/RubiksCube.js', 
+          to: '../example/src/'
+        },        
+      ],
+    }),
   ],
   devtool: 'inline-source-map',
   devServer : {

@@ -21,7 +21,6 @@ function init(){
 	document.getElementById("container").appendChild(renderer.domElement);
 	
 	const test= new CSS3DObject(document.createElement("div"));
-	console.log(test instanceof CSS3DObject);
 	
 	const cube = new RubiksCube(
 		{
@@ -44,9 +43,9 @@ function init(){
 	
 	scene.add(cube);
 	
-	cube.animate("FF'F2");
+	cube.animate("RUR'U'RUR'U'RUR'U'RUR'U'RUR'U'RUR'U'");
 	cube.addEventListener("operationCompleted", function(){
-		alert("complete")
+		// alert("complete")
 	});
 	
 	controls = new OrbitControls(camera, renderer.domElement);
