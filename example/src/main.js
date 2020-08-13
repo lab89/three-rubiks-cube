@@ -26,9 +26,9 @@ function init(){
 		{
 			blockColor : "black",
 			size : {
-				width : 300,
-				height : 300,
-				depth : 300
+				width : 500,
+				height : 500,
+				depth : 500
 			},
 			stickerColorSet : {
 				"f": "rgba(42, 249, 107, 1)",
@@ -43,7 +43,7 @@ function init(){
 	
 	scene.add(cube);
 	
-	cube.animate("RUR'U'RUR'U'RUR'U'RUR'U'RUR'U'RUR'U'");
+	cube.animate("FRFUdU2");
 	cube.addEventListener("operationCompleted", function(){
 		// alert("complete")
 	});

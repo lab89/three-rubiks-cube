@@ -10460,14 +10460,19 @@ Cube333.prototype.operator = function operator(operation, operationGroup) {
   */
   var operations = {
     "U": ["r", "f", "l", "b"],
+    "u": ["r", "f", "l", "b"],
     "y": ["r", "f", "l", "b"],
     "E": ["f", "r", "b", "l"],
     "D": ["f", "r", "b", "l"],
+    "d": ["f", "r", "b", "l"],
     "R": ["f", "u", "b", "d"],
+    "r": ["f", "u", "b", "d"],
     "x": ["f", "u", "b", "d"],
     "S": ["l", "u", "r", "d"],
     "L": ["f", "d", "b", "u"],
+    "l": ["f", "d", "b", "u"],
     "F": ["l", "u", "r", "d"],
+    "f": ["l", "u", "r", "d"],
     "Z": ["l", "u", "r", "d"],
     "M": ["f", "u", "b", "d"],
     "B": ["u", "r", "d", "l"]
@@ -10756,7 +10761,7 @@ RubiksCube.prototype.attachSticker = function attachSticker(realCoord, stickerCo
 
       if (this.stickers[stickerCoord]) {
         this.stickers[stickerCoord].forEach(function (radius) {
-          style[radius] = "80px";
+          style[radius] = this._options.size.width * 0.3 + "px";
         }.bind(this));
       } else {
         style["borderRadius"] = "50% 50% 50% 50%";
