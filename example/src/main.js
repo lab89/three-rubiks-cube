@@ -43,7 +43,7 @@ function init(){
 	
 	scene.add(cube);
 	
-	cube.animate("FRFUdU2");
+	cube.animate("MS");
 	cube.addEventListener("operationCompleted", function(){
 		// alert("complete")
 	});

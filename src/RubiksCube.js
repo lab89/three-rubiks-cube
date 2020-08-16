@@ -182,14 +182,14 @@ Cube333.prototype.operator = function operator(operation, operationGroup){
 		"R" : ["f", "u", "b", "d"],
 		"r" : ["f", "u", "b", "d"],
 		"x" : ["f", "u", "b", "d"],
-		"S" : ["l", "u", "r", "d"],
+		"S" : ["r", "u", "l", "d"],
 		"L" : ["f", "d", "b", "u"],
 		"l" : ["f", "d", "b", "u"],
 		"F" : ["l", "u", "r", "d"],
 		"f" : ["l", "u", "r", "d"],
 		"Z" : ["l", "u", "r", "d"],
-		"M" : ["f", "u", "b", "d"],
-		"B" : ["u", "r", "d", "l"]
+		"M" : ["u", "f", "d", "b"],
+		"B" : ["d", "r", "u", "l"]
 	};
 	
 	const oprs = operations[operation.replace('2', "").replace("'", "")];
@@ -197,6 +197,7 @@ Cube333.prototype.operator = function operator(operation, operationGroup){
 	const isAntiCock = operation.includes("'") ? -1 : 1;
 	operationGroup.children.forEach(function(block){
 		let name = "";
+		// console.log('before : ', block.name)
 		Array.from(block.name).forEach(function(string, i){
 			const index = oprs.indexOf(string);
 			if(index > -1){
@@ -208,7 +209,9 @@ Cube333.prototype.operator = function operator(operation, operationGroup){
 			}
 		});
 		block.name = name;
+		console.log('after : ', block.name)
 	})
+	console.log("===============================================")
 };
 Cube333.prototype.parseOperations = function parseOperations(operations){
 
@@ -291,7 +294,7 @@ Cube333.prototype.operationInfo = function getOperationBlockGroup(operationStrin
 		this.children
 		.filter(function(child){ return Array.from(child.name).includes("u")})
 		.forEach(function(child){tempOperationGroup.add(child)}.bind(this));
-		
+		console.log(this.children.length)
 		axis = new THREE.Vector3(0, 1, 0);
 		angle = -90;
 	}else if(operationString.includes("u")){
