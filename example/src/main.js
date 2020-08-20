@@ -20,7 +20,7 @@ function init(){
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	document.getElementById("container").appendChild(renderer.domElement);
 	
-	const test= new CSS3DObject(document.createElement("div"));
+	// const test= new CSS3DObject(document.createElement("div"));
 	
 	const cube = new RubiksCube(
 		{
@@ -44,15 +44,15 @@ function init(){
 	scene.add(cube);
 	
 	cube.animate("MS");
-	cube.addEventListener("operationCompleted", function(){
-		// alert("complete")
-	});
+	// cube.addEventListener("operationCompleted", function(){
+	// 	// alert("complete")
+	// });
 	
 	controls = new OrbitControls(camera, renderer.domElement);
 	controls.enableZoom = true;
 	controls.enablePan = false;
 	controls.minDistance = 500;
-	controls.maxDistance = 6000;
+	controls.maxDistance = 10000;
 	controls.addEventListener("change", function (e) {
 		console.log("change");
 	});

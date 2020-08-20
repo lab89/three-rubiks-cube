@@ -10392,30 +10392,60 @@ Cube333.prototype.createBlock = function createBlock(options, orientation) {
   top.className = "u";
   top.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + -options.size.height + "px)" + "rotate3d(1, 0, 0, -90deg) ";
   blockElement.appendChild(top);
+  var m_top = faceElement.cloneNode(true);
+  m_top.style.backgroundColor = '';
+  m_top.className = "mu";
+  m_top.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + -options.size.height * 2 + "px)" + "rotate3d(1, 0, 0, -90deg) ";
+  blockElement.appendChild(m_top);
   var down = faceElement.cloneNode(true);
   down.className = "d";
   down.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "rotate3d(1, 0, 0, 90deg) ";
   blockElement.appendChild(down);
+  var m_down = faceElement.cloneNode(true);
+  m_down.style.backgroundColor = '';
+  m_down.className = "md";
+  m_down.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + options.size.height + "px)" + "rotate3d(1, 0, 0, 90deg) ";
+  blockElement.appendChild(m_down);
   /** left - right face **/
 
   var left = faceElement.cloneNode(true);
   left.className = "l";
   left.style.transform = "translateX(" + options.size.width * -1 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
   blockElement.appendChild(left);
+  var m_left = faceElement.cloneNode(true);
+  m_left.style.backgroundColor = '';
+  m_left.className = "ml";
+  m_left.style.transform = "translateX(" + options.size.width * -2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
+  blockElement.appendChild(m_left);
   var right = faceElement.cloneNode(true);
   right.className = "r";
   right.style.transform = " rotate3d(0, 1, 0, 90deg)" + "translateY(" + -options.size.height / 2 + "px)";
   blockElement.appendChild(right);
+  var m_right = faceElement.cloneNode(true);
+  m_right.style.backgroundColor = '';
+  m_right.className = "mr";
+  m_right.style.transform = "translateX(" + options.size.width * 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
+  blockElement.appendChild(m_right);
   /** front - back face **/
 
   var front = faceElement.cloneNode(true);
   front.className = "f";
   front.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth / 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 0deg)";
   blockElement.appendChild(front);
+  var m_front = faceElement.cloneNode(true);
+  m_front.className = "mf";
+  m_front.style.backgroundColor = '';
+  m_front.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth * 1.5 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 0deg)";
+  blockElement.appendChild(m_front);
   var back = faceElement.cloneNode(true);
   back.className = "b";
   back.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth * -1 / 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, -180deg)";
   blockElement.appendChild(back);
+  var m_back = faceElement.cloneNode(true);
+  m_back.className = "mb";
+  m_back.style.backgroundColor = '';
+  m_back.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth * -1 / 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, -180deg)";
+  blockElement.appendChild(m_back);
   var xplane = faceElement.cloneNode(true);
   xplane.className = "z";
   xplane.style.borderRadius = "0px";
@@ -10747,7 +10777,6 @@ RubiksCube.prototype.attachSticker = function attachSticker(realCoord, stickerCo
   var blockCoord = block.name.split("");
   var sticker_coords = stickerCoord.split(""); //sticker coord -> must transform! by faceRotate function
 
-  var sum = Math.abs(this.coordInfo[blockCoord[0]]) + Math.abs(this.coordInfo[blockCoord[1]]) + Math.abs(this.coordInfo[blockCoord[2]]);
   var style = {
     width: this._options.fitment === "fully_fitted" ? "97%" : "90%",
     height: this._options.fitment === "fully_fitted" ? "97%" : "90%",
@@ -10775,6 +10804,11 @@ RubiksCube.prototype.attachSticker = function attachSticker(realCoord, stickerCo
       sticker.className = "sticker";
       Object.assign(sticker.style, style);
       face[0].appendChild(sticker);
+      var mirrorFace = element.getElementsByClassName('m' + sc);
+
+      if (mirrorFace.length) {
+        mirrorFace[0].appendChild(sticker.cloneNode());
+      }
     }
   }.bind(this));
 };
