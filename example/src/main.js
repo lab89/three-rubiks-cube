@@ -38,15 +38,21 @@ function init(){
 				"u": "rgba(230, 245, 252, 1)",
 				"d": "rgba(235, 253, 57, 1)",
 			},
-			fitment : "fully_fitted"
+			fitment : "fully_fitted",
+			mirror : false
 		});
 	
 	scene.add(cube);
-	
 	cube.animate("MS");
-	// cube.addEventListener("operationCompleted", function(){
-	// 	// alert("complete")
-	// });
+	cube.addEventListener("operationCompleted", function(){
+		cube.refreshCube();
+		cube.toggleMirror(true);
+	});
+
+	setTimeout(function(){
+
+		// cube.refreshBlocks();
+	}, 3000)
 	
 	controls = new OrbitControls(camera, renderer.domElement);
 	controls.enableZoom = true;

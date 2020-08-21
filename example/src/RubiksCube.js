@@ -10319,17 +10319,30 @@ var Cube333 = function Cube333(options) {
     coordsArr.forEach(function (coordString) {
       var coords = coordString.split("");
       var coordVector = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](this.coordInfo[coords[0]], this.coordInfo[coords[1]], this.coordInfo[coords[2]]);
-      var block = this.createBlock(options, coordVector);
+      var block = this.createBlock(this._options, coordVector);
       this.add(block);
       block.name = coordString; //init coord String
 
-      block.position.x = coordVector.x * options.size.width;
-      block.position.y = -coordVector.y * options.size.height;
-      block.position.z = coordVector.z * options.size.depth;
+      block.position.x = coordVector.x * this._options.size.width;
+      block.position.y = -coordVector.y * this._options.size.height;
+      block.position.z = coordVector.z * this._options.size.depth;
     }.bind(this));
   }.bind(this));
   this.operationsArray = [];
   this.addEventListener("operation", function (event) {
+    //그룹 없애기
+    var tempOperationGroup2 = this.parent.getObjectByName("tempOperationGroup");
+
+    if (tempOperationGroup2) {
+      if (tempOperationGroup2.children.length) {
+        while (tempOperationGroup2.children.length) {
+          this.attach(tempOperationGroup2.children[tempOperationGroup2.children.length - 1]);
+        }
+      }
+
+      this.parent.remove(tempOperationGroup2);
+    }
+
     if (event.index > this.operationsArray.length - 1) {
       this.dispatchEvent({
         type: "operationCompleted"
@@ -10392,60 +10405,30 @@ Cube333.prototype.createBlock = function createBlock(options, orientation) {
   top.className = "u";
   top.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + -options.size.height + "px)" + "rotate3d(1, 0, 0, -90deg) ";
   blockElement.appendChild(top);
-  var m_top = faceElement.cloneNode(true);
-  m_top.style.backgroundColor = '';
-  m_top.className = "mu";
-  m_top.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + -options.size.height * 2 + "px)" + "rotate3d(1, 0, 0, -90deg) ";
-  blockElement.appendChild(m_top);
   var down = faceElement.cloneNode(true);
   down.className = "d";
   down.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "rotate3d(1, 0, 0, 90deg) ";
   blockElement.appendChild(down);
-  var m_down = faceElement.cloneNode(true);
-  m_down.style.backgroundColor = '';
-  m_down.className = "md";
-  m_down.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + options.size.height + "px)" + "rotate3d(1, 0, 0, 90deg) ";
-  blockElement.appendChild(m_down);
   /** left - right face **/
 
   var left = faceElement.cloneNode(true);
   left.className = "l";
   left.style.transform = "translateX(" + options.size.width * -1 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
   blockElement.appendChild(left);
-  var m_left = faceElement.cloneNode(true);
-  m_left.style.backgroundColor = '';
-  m_left.className = "ml";
-  m_left.style.transform = "translateX(" + options.size.width * -2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
-  blockElement.appendChild(m_left);
   var right = faceElement.cloneNode(true);
   right.className = "r";
   right.style.transform = " rotate3d(0, 1, 0, 90deg)" + "translateY(" + -options.size.height / 2 + "px)";
   blockElement.appendChild(right);
-  var m_right = faceElement.cloneNode(true);
-  m_right.style.backgroundColor = '';
-  m_right.className = "mr";
-  m_right.style.transform = "translateX(" + options.size.width * 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
-  blockElement.appendChild(m_right);
   /** front - back face **/
 
   var front = faceElement.cloneNode(true);
   front.className = "f";
   front.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth / 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 0deg)";
   blockElement.appendChild(front);
-  var m_front = faceElement.cloneNode(true);
-  m_front.className = "mf";
-  m_front.style.backgroundColor = '';
-  m_front.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth * 1.5 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 0deg)";
-  blockElement.appendChild(m_front);
   var back = faceElement.cloneNode(true);
   back.className = "b";
   back.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth * -1 / 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, -180deg)";
   blockElement.appendChild(back);
-  var m_back = faceElement.cloneNode(true);
-  m_back.className = "mb";
-  m_back.style.backgroundColor = '';
-  m_back.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth * -1 / 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, -180deg)";
-  blockElement.appendChild(m_back);
   var xplane = faceElement.cloneNode(true);
   xplane.className = "z";
   xplane.style.borderRadius = "0px";
@@ -10468,6 +10451,42 @@ Cube333.prototype.createBlock = function createBlock(options, orientation) {
   zplane.style.width = options.size.width * 0.9 + "px";
   zplane.style.height = options.size.height * 0.9 + "px";
   blockElement.appendChild(zplane);
+  var m_top = faceElement.cloneNode(true);
+  m_top.style.backgroundColor = '';
+  m_top.style.visibility = options.mirror ? 'visible' : 'hidden';
+  m_top.className = "mu";
+  m_top.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + -options.size.height * 4 + "px)" + "rotate3d(1, 0, 0, -90deg) ";
+  blockElement.appendChild(m_top);
+  var m_down = faceElement.cloneNode(true);
+  m_down.style.backgroundColor = '';
+  m_down.style.visibility = options.mirror ? 'visible' : 'hidden';
+  m_down.className = "md";
+  m_down.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + options.size.height * 3 + "px)" + "rotate3d(1, 0, 0, 90deg) ";
+  blockElement.appendChild(m_down);
+  var m_left = faceElement.cloneNode(true);
+  m_left.style.backgroundColor = '';
+  m_left.style.visibility = options.mirror ? 'visible' : 'hidden';
+  m_left.className = "ml";
+  m_left.style.transform = "translateX(" + options.size.width * -4 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
+  blockElement.appendChild(m_left);
+  var m_right = faceElement.cloneNode(true);
+  m_right.style.backgroundColor = '';
+  m_right.style.visibility = options.mirror ? 'visible' : 'hidden';
+  m_right.className = "mr";
+  m_right.style.transform = "translateX(" + options.size.width * 4 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
+  blockElement.appendChild(m_right);
+  var m_front = faceElement.cloneNode(true);
+  m_front.className = "mf";
+  m_front.style.visibility = options.mirror ? 'visible' : 'hidden';
+  m_front.style.backgroundColor = '';
+  m_front.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth * 3.5 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 0deg)";
+  blockElement.appendChild(m_front);
+  var m_back = faceElement.cloneNode(true);
+  m_back.className = "mb";
+  m_back.style.backgroundColor = '';
+  m_back.style.visibility = options.mirror ? 'visible' : 'hidden';
+  m_back.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth * -3.5 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, -180deg)";
+  blockElement.appendChild(m_back);
   var block = new three_examples_jsm_renderers_CSS3DRenderer__WEBPACK_IMPORTED_MODULE_1__["CSS3DObject"](blockElement);
   block.rotateOnAxis(new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0), this.children.length * 90 * Math.PI / 180);
   return block;
@@ -10545,19 +10564,7 @@ Cube333.prototype.parseOperations = function parseOperations(operations) {
 };
 
 Cube333.prototype.operationInfo = function getOperationBlockGroup(operationString) {
-  var tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
-
-  if (tempOperationGroup) {
-    if (tempOperationGroup.children.length) {
-      while (tempOperationGroup.children.length) {
-        this.attach(tempOperationGroup.children[tempOperationGroup.children.length - 1]);
-      }
-    }
-
-    this.parent.remove(tempOperationGroup);
-  }
-
-  tempOperationGroup = new three__WEBPACK_IMPORTED_MODULE_0__["Group"]();
+  var tempOperationGroup = new three__WEBPACK_IMPORTED_MODULE_0__["Group"]();
   tempOperationGroup.name = "tempOperationGroup";
   this.parent.add(tempOperationGroup);
   var axis;
@@ -10728,6 +10735,39 @@ Cube333.prototype.animate = function animate(operations) {
     index: 0
   });
 };
+
+Cube333.prototype.refreshBlocks = function refreshBlocks() {
+  while (this.children.length) {
+    this.remove(this.children[this.children.length - 1]);
+  }
+
+  this.blocks.forEach(function (coordsArr) {
+    coordsArr.forEach(function (coordString) {
+      var coords = coordString.split("");
+      var coordVector = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](this.coordInfo[coords[0]], this.coordInfo[coords[1]], this.coordInfo[coords[2]]);
+      var block = this.createBlock(this._options, coordVector);
+      this.add(block);
+      block.name = coordString; //init coord String
+
+      block.position.x = coordVector.x * this._options.size.width;
+      block.position.y = -coordVector.y * this._options.size.height;
+      block.position.z = coordVector.z * this._options.size.depth;
+    }.bind(this));
+  }.bind(this));
+};
+
+Cube333.prototype.toggleMirror = function toggleMirror(toggle) {
+  var faces = ["f", "b", "u", "d", "l", "r"];
+  this.children.forEach(function (child) {
+    faces.forEach(function (face) {
+      var result = child.element.getElementsByClassName("m" + face);
+
+      if (result.length) {
+        result[0].style.visibility = toggle ? 'visible' : 'hidden';
+      }
+    });
+  });
+};
 /**
 * param
  *  blockColor : "black, white etc..",
@@ -10810,6 +10850,15 @@ RubiksCube.prototype.attachSticker = function attachSticker(realCoord, stickerCo
         mirrorFace[0].appendChild(sticker.cloneNode());
       }
     }
+  }.bind(this));
+};
+
+RubiksCube.prototype.refreshCube = function refreshCube() {
+  this.refreshBlocks();
+  this.blocks.forEach(function (arr) {
+    arr.forEach(function (coord, i) {
+      this.attachSticker(coord, arr[0], i);
+    }.bind(this));
   }.bind(this));
 };
 
