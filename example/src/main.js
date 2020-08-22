@@ -24,11 +24,11 @@ function init(){
 	
 	const cube = new RubiksCube(
 		{
-			blockColor : "black",
+			blockColor : "cyan",
 			size : {
-				width : 500,
-				height : 500,
-				depth : 500
+				width : 300,
+				height : 300,
+				depth : 300
 			},
 			stickerColorSet : {
 				"f": "rgba(42, 249, 107, 1)",
@@ -39,20 +39,27 @@ function init(){
 				"d": "rgba(235, 253, 57, 1)",
 			},
 			fitment : "fully_fitted",
-			mirror : false
+			mirror : true,
+			hoverEnabled : true,
+			clickEnabled : true,
+			hoverColor : "red",
+			clickColor : "rgb(131, 219, 28)",
+			animateDuration : 1000
 		});
 	
 	scene.add(cube);
+	
 	cube.animate("MS");
 	cube.addEventListener("operationCompleted", function(){
 		cube.refreshCube();
-		cube.toggleMirror(true);
+		cube.toggleMirror(false);
+		cube.operate("FR");
 	});
 
-	setTimeout(function(){
+	// setTimeout(function(){
 
-		// cube.refreshBlocks();
-	}, 3000)
+	// 	// cube.refreshBlocks();
+	// }, 3000)
 	
 	controls = new OrbitControls(camera, renderer.domElement);
 	controls.enableZoom = true;

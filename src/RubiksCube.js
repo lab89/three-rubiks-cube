@@ -10,8 +10,11 @@ NNNCube.prototype.constructor = NNNCube;
 
 const Cube333 = function Cube333(options){
 	NNNCube.apply(this);
-	this._options = options;
-	this.coordInfo = {
+	console.log("**********************************")
+	console.log("%c THREE JS RUBIKS CUBE!", 'background: #222; color: #bada55')
+	console.log("**********************************")
+	this.options = options;
+	this._coordInfo = {
 		x : 0,
 		l : -1,
 		r : 1,
@@ -21,7 +24,7 @@ const Cube333 = function Cube333(options){
 		d : 1,
 	};
 
-	this.blocks = [
+	this._blocks = [
 		["luf", "ruf", "rub", "lub"],
 		["ldf", "rdf", "rdb", "ldb"],
 		["lxf", "rxf", "rxb", "lxb"],
@@ -31,38 +34,81 @@ const Cube333 = function Cube333(options){
 		["xux"],
 		["xdx"]
 	];
-	this.blocks.forEach(function(coordsArr){
+
+	this._blocks.forEach(function(coordsArr){
 		coordsArr.forEach(function(coordString){
 			const coords = coordString.split("");
-			const coordVector = new THREE.Vector3(this.coordInfo[coords[0]], this.coordInfo[coords[1]], this.coordInfo[coords[2]]);
-			const block = this.createBlock(this._options, coordVector);
+			const coordVector = new THREE.Vector3(this._coordInfo[coords[0]], this._coordInfo[coords[1]], this._coordInfo[coords[2]]);
+			const block = this._createBlock(this.options, coordVector);
 			this.add(block);
+			block.userData = {
+				clicked : false
+			}
 			block.name = coordString; //init coord String
-			block.position.x = coordVector.x * this._options.size.width;
-			block.position.y = -coordVector.y * this._options.size.height;
-			block.position.z = coordVector.z * this._options.size.depth;
+			block.position.x = coordVector.x * this.options.size.width;
+			block.position.y = -coordVector.y * this.options.size.height;
+			block.position.z = coordVector.z * this.options.size.depth;			
+			block.element.addEventListener('mouseover', (event) => {	
+				if(!this.options.hoverEnabled) return;			
+				if(block.userData.clicked)	return;
+				Array.from(block.element.children).forEach((child)=>{					
+					if(child.className !== 'y' 
+					&& child.className !== 'x' 
+					&& child.className !== 'z'
+					&& !child.className.includes('m')
+					)
+						child.style.backgroundColor = this.options.hoverColor;		
+				});				
+			})
+			block.element.addEventListener('mouseout', (event)=>{
+				if(!this.options.hoverEnabled) return;			
+				if(block.userData.clicked)	return;
+				Array.from(block.element.children).forEach((child)=>{
+					if(!child.className.includes('m'))
+						child.style.backgroundColor = this.options.blockColor;
+				})				
+			})			
+			block.element.addEventListener('mousedown', (event) => {
+				if(!this.options.clickEnabled) return;	
+				if(!block.userData.clicked){
+					Array.from(block.element.children).forEach((child)=>{					
+						if(child.className !== 'y' 
+						&& child.className !== 'x' 
+						&& child.className !== 'z'
+						&& !child.className.includes('m')
+						)
+							child.style.backgroundColor = this.options.clickColor;		
+					});				
+				}else{
+					Array.from(block.element.children).forEach((child)=>{
+						if(!child.className.includes('m'))
+							child.style.backgroundColor = this.options.blockColor;
+					})					}
+				block.userData.clicked = !block.userData.clicked;
+			})
 		}.bind(this))
 	}.bind(this));
 
-	this.operationsArray = [];
+	this._operationsArray = [];
 	this.addEventListener("operation", function(event){
 		//그룹 없애기
-		let tempOperationGroup2 = this.parent.getObjectByName("tempOperationGroup");
-		if(tempOperationGroup2){
-			if(tempOperationGroup2.children.length){
-				while(tempOperationGroup2.children.length){
-					this.attach(tempOperationGroup2.children[tempOperationGroup2.children.length - 1])
+		let tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+		if(tempOperationGroup){
+			if(tempOperationGroup.children.length){
+				while(tempOperationGroup.children.length){
+					this.attach(tempOperationGroup.children[tempOperationGroup.children.length - 1])
 				}
 			}
-			this.parent.remove(tempOperationGroup2);
+			this.parent.remove(tempOperationGroup);
 		}
 
-		if(event.index > this.operationsArray.length - 1) {
+		if(event.index > this._operationsArray.length - 1) {
+			this._operationsArray = [];
 			this.dispatchEvent({type : "operationCompleted"});
 			return
 		}
-		const operationInfo = this.operationInfo(this.operationsArray[event.index]);
-		const tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+		const operationInfo = this._makeOperationInfo(this._operationsArray[event.index]);
+		tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
 		function inOutQuad(n){
 			n *= 2;
 			if (n < 1) return 0.5 * n * n;
@@ -72,11 +118,11 @@ const Cube333 = function Cube333(options){
 		function animation(timestamp){
 			if (!start) start = timestamp;
 			const progress = timestamp - start;
-			if (progress <= 1000) {
+			if (progress <= this.options.animateDuration) {
 				tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);
 				window.requestAnimationFrame(animation.bind(this));
 			}else{
-				this.operator(this.operationsArray[event.index], tempOperationGroup);
+				this._operator(this._operationsArray[event.index], tempOperationGroup);
 				this.dispatchEvent({type : "operation", index : event.index + 1});
 				return;
 			}
@@ -87,10 +133,10 @@ const Cube333 = function Cube333(options){
 };
 Cube333.prototype = Object.create(NNNCube.prototype);
 Cube333.prototype.constructor = Cube333;
-Cube333.prototype.createBlock = function createBlock(options, orientation){
+Cube333.prototype._createBlock = function _createBlock(options, orientation){
 	const commonStyle = {
 		position: "absolute",
-		backgroundColor: "black",
+		backgroundColor: this.options.blockColor,
 		borderRadius : "30px",
 		width: options.size.width + "px",
 		height: options.size.height + "px",
@@ -173,6 +219,7 @@ Cube333.prototype.createBlock = function createBlock(options, orientation){
 	const m_down = faceElement.cloneNode(true);
 	m_down.style.backgroundColor = '';
 	m_down.style.visibility = options.mirror ? 'visible' : 'hidden';
+
 	m_down.className = "md";
 	m_down.style.transform = "translateX("+ (-options.size.width / 2) + "px)"+ "translateY(" + (options.size.height * 3) + "px)" + "rotate3d(1, 0, 0, 90deg) ";
 	blockElement.appendChild(m_down);	
@@ -210,7 +257,7 @@ Cube333.prototype.createBlock = function createBlock(options, orientation){
 
 	return block;
 };
-Cube333.prototype.operator = function operator(operation, operationGroup){
+Cube333.prototype._operator = function _operator(operation, operationGroup){
 		/***
 	 * U operation, Y operation. E operation
 	 * r -> f - > l -> b
@@ -249,8 +296,7 @@ Cube333.prototype.operator = function operator(operation, operationGroup){
 	const isDouble = operation.includes("2") ? 2 : 1;
 	const isAntiCock = operation.includes("'") ? -1 : 1;
 	operationGroup.children.forEach(function(block){
-		let name = "";
-		// console.log('before : ', block.name)
+		let name = "";		
 		Array.from(block.name).forEach(function(string, i){
 			const index = oprs.indexOf(string);
 			if(index > -1){
@@ -262,11 +308,9 @@ Cube333.prototype.operator = function operator(operation, operationGroup){
 			}
 		});
 		block.name = name;
-		console.log('after : ', block.name)
 	})
-	console.log("===============================================")
 };
-Cube333.prototype.parseOperations = function parseOperations(operations){
+Cube333.prototype._parseOperations = function _parseOperations(operations){
 
 	function parse(operation) {
 		const array = []
@@ -279,7 +323,7 @@ Cube333.prototype.parseOperations = function parseOperations(operations){
 	
 	return parse(operations);
 };
-Cube333.prototype.operationInfo = function getOperationBlockGroup(operationString){
+Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operationString){
 	
 	const tempOperationGroup = new THREE.Group();
 	tempOperationGroup.name = "tempOperationGroup";
@@ -339,14 +383,12 @@ Cube333.prototype.operationInfo = function getOperationBlockGroup(operationStrin
 		this.children
 		.filter(function(child){ return Array.from(child.name).includes("u")})
 		.forEach(function(child){tempOperationGroup.add(child)}.bind(this));
-		console.log(this.children.length)
 		axis = new THREE.Vector3(0, 1, 0);
 		angle = -90;
 	}else if(operationString.includes("u")){
 		this.children
 		.filter(function(child){ return !Array.from(child.name).includes("d")})
-		.forEach(function(child){tempOperationGroup.add(child)}.bind(this));
-		
+		.forEach(function(child){tempOperationGroup.add(child)}.bind(this));		
 		axis = new THREE.Vector3(0, 1, 0);
 		angle = -90;
 	}else if(operationString.includes("D")){
@@ -423,23 +465,42 @@ Cube333.prototype.operationInfo = function getOperationBlockGroup(operationStrin
 	}
 };
 Cube333.prototype.animate = function animate(operations){
-	this.operationsArray = this.parseOperations(operations);
+	this._operationsArray = this._parseOperations(operations);
 	this.dispatchEvent({ type: 'operation', index: 0 })
 };
-Cube333.prototype.refreshBlocks = function refreshBlocks(){
+Cube333.prototype.operate = function operate(operations, animation){
+	this._operationsArray = this._parseOperations(operations);
+	this._operationsArray.forEach((operation)=>{
+		let tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+		if(tempOperationGroup){
+			if(tempOperationGroup.children.length){
+				while(tempOperationGroup.children.length){
+					this.attach(tempOperationGroup.children[tempOperationGroup.children.length - 1])
+				}
+			}
+			this.parent.remove(tempOperationGroup);
+		}		
+		const operationInfo = this._makeOperationInfo(operation);
+		tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+		tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, operationInfo.angle * Math.PI / 180);
+		this._operator(operation, tempOperationGroup);
+	})	
+	this._operationsArray = [];
+}
+Cube333.prototype._refreshBlocks = function _refreshBlocks(){
 	while(this.children.length){
 		this.remove(this.children[this.children.length - 1])
 	}
-	this.blocks.forEach(function(coordsArr){
+	this._blocks.forEach(function(coordsArr){
 		coordsArr.forEach(function(coordString){
 			const coords = coordString.split("");
-			const coordVector = new THREE.Vector3(this.coordInfo[coords[0]], this.coordInfo[coords[1]], this.coordInfo[coords[2]]);
-			const block = this.createBlock(this._options, coordVector);
+			const coordVector = new THREE.Vector3(this._coordInfo[coords[0]], this._coordInfo[coords[1]], this._coordInfo[coords[2]]);
+			const block = this._createBlock(this.options, coordVector);
 			this.add(block);
 			block.name = coordString; //init coord String
-			block.position.x = coordVector.x * this._options.size.width;
-			block.position.y = -coordVector.y * this._options.size.height;
-			block.position.z = coordVector.z * this._options.size.depth;
+			block.position.x = coordVector.x * this.options.size.width;
+			block.position.y = -coordVector.y * this.options.size.height;
+			block.position.z = coordVector.z * this.options.size.depth;
 		}.bind(this))
 	}.bind(this));
 }
@@ -469,22 +530,22 @@ Cube333.prototype.toggleMirror = function toggleMirror(toggle){
 * */
 const RubiksCube = function(options){
 	Cube333.apply(this, [options]);
-	this.stickers = {
+	this._stickers = {
 		"luf" : ["borderBottomRightRadius"],
 		"ldf" : ["borderTopRightRadius"],
 		"lxf" : ["borderTopRightRadius", "borderBottomRightRadius"],
 		"xdf" : ["borderTopRightRadius", "borderTopLeftRadius"],
 		"xuf" : ["borderBottomRightRadius", "borderBottomLeftRadius"]
 	};
-	this.blocks.forEach(function(arr){
-		arr.forEach(function(coord, i){
-			this.attachSticker(coord, arr[0], i);
-		}.bind(this))
-	}.bind(this))
+	this._blocks.forEach((arr) => {
+		arr.forEach((coord, i) => {
+			this._attachSticker(coord, arr[0], i);
+		})
+	})
 };
 RubiksCube.prototype = Object.create(Cube333.prototype);
 RubiksCube.prototype.constructor = RubiksCube;
-RubiksCube.prototype.attachSticker = function attachSticker(realCoord, stickerCoord, idx){
+RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, stickerCoord, idx){
 	function faceRotate(text, i){
 		const arr = ["f", "r", "b", "l"];
 		const index = arr.indexOf(text);
@@ -498,9 +559,9 @@ RubiksCube.prototype.attachSticker = function attachSticker(realCoord, stickerCo
 	const blockCoord = block.name.split("");
 	const sticker_coords = stickerCoord.split(""); //sticker coord -> must transform! by faceRotate function
 	const style = {
-		width : this._options.fitment === "fully_fitted" ? "97%" : "90%",
-		height : this._options.fitment === "fully_fitted" ? "97%" : "90%",
-		margin : this._options.fitment === "fully_fitted" ? "5px" : "8px",
+		width : this.options.fitment === "fully_fitted" ? "97%" : "90%",
+		height : this.options.fitment === "fully_fitted" ? "97%" : "90%",
+		margin : this.options.fitment === "fully_fitted" ? "5px" : "8px",
 		borderRadius : "30px"
 	};
 	const element = block.element;
@@ -508,11 +569,11 @@ RubiksCube.prototype.attachSticker = function attachSticker(realCoord, stickerCo
 		const face = element.getElementsByClassName(sc);
 		if(face.length){
 			Object.assign(style, {
-				backgroundColor : this._options.stickerColorSet[faceRotate(sc, idx % 4)],
+				backgroundColor : this.options.stickerColorSet[faceRotate(sc, idx % 4)],
 			})
-			if(this.stickers[stickerCoord]){
-				this.stickers[stickerCoord].forEach(function(radius){
-					style[radius] = this._options.size.width * 0.3 + "px";
+			if(this._stickers[stickerCoord]){
+				this._stickers[stickerCoord].forEach(function(radius){
+					style[radius] = this.options.size.width * 0.3 + "px";
 				}.bind(this))
 			}else{
 				style["borderRadius"] = "50% 50% 50% 50%";
@@ -525,18 +586,24 @@ RubiksCube.prototype.attachSticker = function attachSticker(realCoord, stickerCo
 
 			const mirrorFace = element.getElementsByClassName('m'+sc);
 			if(mirrorFace.length){			
-				mirrorFace[0].appendChild(sticker.cloneNode());
+				const mirrorSticker = sticker.cloneNode();
+				mirrorSticker.className = "mirror"
+				mirrorFace[0].appendChild(mirrorSticker);
 			}
 		}
-		
 	}.bind(this))
+
+	// remove empty mirror
+	const emptyMirror = Array.from(element.children)
+		.filter((el)=> el.className.includes('m') && el.children.length === 0)
+		.forEach((el)=> el.remove());
 };
 RubiksCube.prototype.refreshCube = function refreshCube(){
-	this.refreshBlocks();
-	this.blocks.forEach(function(arr){
-		arr.forEach(function(coord, i){
-			this.attachSticker(coord, arr[0], i);
-		}.bind(this))
-	}.bind(this))
+	this._refreshBlocks();
+	this._blocks.forEach((arr) => {
+		arr.forEach((coord, i) => {
+			this._attachSticker(coord, arr[0], i);
+		})
+	})
 }
 export default RubiksCube ;
