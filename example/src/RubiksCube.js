@@ -10970,6 +10970,7 @@ RubiksCube.prototype.refreshStickers = function refreshStickers() {
   var _this6 = this;
 
   var faces = this.children.map(function (child) {
+    child.userData.clicked = false;
     return Array.from(child.element.children).filter(function (childEl) {
       return !childEl.className.includes("x") && !childEl.className.includes("y") && !childEl.className.includes("z");
     });

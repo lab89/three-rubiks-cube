@@ -625,7 +625,8 @@ RubiksCube.prototype.refreshCube = function refreshCube(){
 	})
 }
 RubiksCube.prototype.refreshStickers = function refreshStickers(){
-	const faces =this.children.map((child)=>{			
+	const faces =this.children.map((child)=>{		
+		child.userData.clicked = false;	
 		return Array.from(child.element.children).filter((childEl)=> {
 			return !childEl.className.includes("x")
 			&& !childEl.className.includes("y")
