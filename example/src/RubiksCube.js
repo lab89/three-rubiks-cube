@@ -10988,6 +10988,16 @@ RubiksCube.prototype.refreshStickers = function refreshStickers() {
   });
 };
 
+RubiksCube.prototype.refreshBlockColor = function refreshBlockColor() {
+  var _this7 = this;
+
+  var faces = this.children.forEach(function (child) {
+    Array.from(child.element.children).forEach(function (childEl) {
+      if (!childEl.className.includes('m')) childEl.style.backgroundColor = _this7.options.blockColor;
+    });
+  });
+};
+
 /* harmony default export */ __webpack_exports__["default"] = (RubiksCube);
 
 /***/ }),

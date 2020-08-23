@@ -645,4 +645,12 @@ RubiksCube.prototype.refreshStickers = function refreshStickers(){
 		})
 	})
 }
+RubiksCube.prototype.refreshBlockColor = function refreshBlockColor(){
+	const faces =this.children.forEach((child)=>{			
+		Array.from(child.element.children).forEach((childEl)=> {
+			if(!childEl.className.includes('m'))
+				childEl.style.backgroundColor = this.options.blockColor;
+		})
+	})
+}
 export default RubiksCube ;

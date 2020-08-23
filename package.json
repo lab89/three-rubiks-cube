@@ -1,6 +1,6 @@
 {
   "name": "three-rubiks-cube",
-  "version": "1.0.0-beta8",
+  "version": "1.0.0-beta12",
   "description": "a extension THREE.CSS3DObject for making rubik's cube",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

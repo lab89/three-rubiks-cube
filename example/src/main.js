@@ -56,7 +56,8 @@ function init(){
 	// });
 
 	setTimeout(function(){
-		cube.unselectAllBlock();
+		cube.options.blockColor = "white";
+		cube.refreshBlockColor();
 	}, 5000)
 	
 	controls = new OrbitControls(camera, renderer.domElement);
