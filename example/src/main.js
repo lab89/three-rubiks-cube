@@ -47,19 +47,17 @@ function init(){
 			animateDuration : 1000
 		});
 	
-	scene.add(cube);
+	scene.add(cube);	
 	
-	cube.animate("MS");
-	cube.addEventListener("operationCompleted", function(){
-		cube.refreshCube();
-		cube.toggleMirror(false);
-		cube.operate("FR");
-	});
+	// cube.animate("F");
+	// cube.addEventListener("operationCompleted", function(){		
+	// 	// cube.options.stickerColorSet["f"] = "black";
+	// 	cube.refreshCube();
+	// });
 
-	// setTimeout(function(){
-
-	// 	// cube.refreshBlocks();
-	// }, 3000)
+	setTimeout(function(){
+		cube.unselectAllBlock();
+	}, 5000)
 	
 	controls = new OrbitControls(camera, renderer.domElement);
 	controls.enableZoom = true;

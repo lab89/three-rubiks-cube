@@ -48,44 +48,7 @@ const Cube333 = function Cube333(options){
 			block.position.x = coordVector.x * this.options.size.width;
 			block.position.y = -coordVector.y * this.options.size.height;
 			block.position.z = coordVector.z * this.options.size.depth;			
-			block.element.addEventListener('mouseover', (event) => {	
-				if(!this.options.hoverEnabled) return;			
-				if(block.userData.clicked)	return;
-				Array.from(block.element.children).forEach((child)=>{					
-					if(child.className !== 'y' 
-					&& child.className !== 'x' 
-					&& child.className !== 'z'
-					&& !child.className.includes('m')
-					)
-						child.style.backgroundColor = this.options.hoverColor;		
-				});				
-			})
-			block.element.addEventListener('mouseout', (event)=>{
-				if(!this.options.hoverEnabled) return;			
-				if(block.userData.clicked)	return;
-				Array.from(block.element.children).forEach((child)=>{
-					if(!child.className.includes('m'))
-						child.style.backgroundColor = this.options.blockColor;
-				})				
-			})			
-			block.element.addEventListener('mousedown', (event) => {
-				if(!this.options.clickEnabled) return;	
-				if(!block.userData.clicked){
-					Array.from(block.element.children).forEach((child)=>{					
-						if(child.className !== 'y' 
-						&& child.className !== 'x' 
-						&& child.className !== 'z'
-						&& !child.className.includes('m')
-						)
-							child.style.backgroundColor = this.options.clickColor;		
-					});				
-				}else{
-					Array.from(block.element.children).forEach((child)=>{
-						if(!child.className.includes('m'))
-							child.style.backgroundColor = this.options.blockColor;
-					})					}
-				block.userData.clicked = !block.userData.clicked;
-			})
+			this._initMouseEventListener(block);
 		}.bind(this))
 	}.bind(this));
 
@@ -501,6 +464,7 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks(){
 			block.position.x = coordVector.x * this.options.size.width;
 			block.position.y = -coordVector.y * this.options.size.height;
 			block.position.z = coordVector.z * this.options.size.depth;
+			this._initMouseEventListener(block);
 		}.bind(this))
 	}.bind(this));
 }
@@ -515,7 +479,62 @@ Cube333.prototype.toggleMirror = function toggleMirror(toggle){
 		})
 	})
 }
+Cube333.prototype._initMouseEventListener = function _initMouseEventListener(block){
 
+	block.element.addEventListener('mouseover', (event) => {	
+		if(!this.options.hoverEnabled) return;			
+		if(block.userData.clicked)	return;
+		Array.from(block.element.children).forEach((child)=>{					
+			if(child.className !== 'y' 
+			&& child.className !== 'x' 
+			&& child.className !== 'z'
+			&& !child.className.includes('m')
+			)
+				child.style.backgroundColor = this.options.hoverColor;		
+		});				
+	})
+	block.element.addEventListener('mouseout', (event)=>{
+		if(!this.options.hoverEnabled) return;			
+		if(block.userData.clicked)	return;
+		Array.from(block.element.children).forEach((child)=>{
+			if(!child.className.includes('m'))
+				child.style.backgroundColor = this.options.blockColor;
+		})				
+	})			
+	block.element.addEventListener('mousedown', (event) => {
+		if(!this.options.clickEnabled) return;	
+		if(!block.userData.clicked){
+			Array.from(block.element.children).forEach((child)=>{					
+				if(child.className !== 'y' 
+				&& child.className !== 'x' 
+				&& child.className !== 'z'
+				&& !child.className.includes('m')
+				)
+					child.style.backgroundColor = this.options.clickColor;		
+			});				
+		}else{
+			Array.from(block.element.children).forEach((child)=>{
+				if(!child.className.includes('m'))
+					child.style.backgroundColor = this.options.blockColor;
+			})					}
+		block.userData.clicked = !block.userData.clicked;
+	})
+}
+Cube333.prototype.unselectAllBlock = function unselectAllBlock(){
+	this.children.forEach((block)=>{
+		if(block.userData.clicked){
+			Array.from(block.element.children).forEach((child)=>{					
+				if(child.className !== 'y' 
+				&& child.className !== 'x' 
+				&& child.className !== 'z'
+				&& !child.className.includes('m')
+				)
+					child.style.backgroundColor = this.options.blockColor;		
+			});			
+			block.userData.clicked = false;
+		}
+	})
+}
 /**
 * param
  *  blockColor : "black, white etc..",
@@ -580,14 +599,13 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
 			}
 
 			const sticker = document.createElement("div");
-			sticker.className = "sticker";
+			sticker.className = "sticker_" + faceRotate(sc, idx % 4);
 			Object.assign(sticker.style, style)
 			face[0].appendChild(sticker);
 
 			const mirrorFace = element.getElementsByClassName('m'+sc);
 			if(mirrorFace.length){			
 				const mirrorSticker = sticker.cloneNode();
-				mirrorSticker.className = "mirror"
 				mirrorFace[0].appendChild(mirrorSticker);
 			}
 		}
@@ -603,6 +621,27 @@ RubiksCube.prototype.refreshCube = function refreshCube(){
 	this._blocks.forEach((arr) => {
 		arr.forEach((coord, i) => {
 			this._attachSticker(coord, arr[0], i);
+		})
+	})
+}
+RubiksCube.prototype.refreshStickers = function refreshStickers(){
+	const faces =this.children.map((child)=>{			
+		return Array.from(child.element.children).filter((childEl)=> {
+			return !childEl.className.includes("x")
+			&& !childEl.className.includes("y")
+			&& !childEl.className.includes("z")
+		})
+	})
+	
+	const facesString = ["f", "b", "u", "d", "r","l"];	
+	faces.forEach((face)=>{
+		face.forEach((child)=>{
+			facesString.forEach((faceString)=>{
+				const sticker = child.getElementsByClassName("sticker_" + faceString)
+				if(sticker.length){										
+					sticker[0].style.backgroundColor = this.options.stickerColorSet[faceString];
+				}
+			})
 		})
 	})
 }

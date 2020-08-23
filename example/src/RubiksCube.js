@@ -10321,8 +10321,6 @@ var Cube333 = function Cube333(options) {
 
   this._blocks.forEach(function (coordsArr) {
     coordsArr.forEach(function (coordString) {
-      var _this = this;
-
       var coords = coordString.split("");
       var coordVector = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](this._coordInfo[coords[0]], this._coordInfo[coords[1]], this._coordInfo[coords[2]]);
 
@@ -10337,35 +10335,8 @@ var Cube333 = function Cube333(options) {
       block.position.x = coordVector.x * this.options.size.width;
       block.position.y = -coordVector.y * this.options.size.height;
       block.position.z = coordVector.z * this.options.size.depth;
-      block.element.addEventListener('mouseover', function (event) {
-        if (!_this.options.hoverEnabled) return;
-        if (block.userData.clicked) return;
-        Array.from(block.element.children).forEach(function (child) {
-          if (child.className !== 'y' && child.className !== 'x' && child.className !== 'z' && !child.className.includes('m')) child.style.backgroundColor = _this.options.hoverColor;
-        });
-      });
-      block.element.addEventListener('mouseout', function (event) {
-        if (!_this.options.hoverEnabled) return;
-        if (block.userData.clicked) return;
-        Array.from(block.element.children).forEach(function (child) {
-          if (!child.className.includes('m')) child.style.backgroundColor = _this.options.blockColor;
-        });
-      });
-      block.element.addEventListener('mousedown', function (event) {
-        if (!_this.options.clickEnabled) return;
 
-        if (!block.userData.clicked) {
-          Array.from(block.element.children).forEach(function (child) {
-            if (child.className !== 'y' && child.className !== 'x' && child.className !== 'z' && !child.className.includes('m')) child.style.backgroundColor = _this.options.clickColor;
-          });
-        } else {
-          Array.from(block.element.children).forEach(function (child) {
-            if (!child.className.includes('m')) child.style.backgroundColor = _this.options.blockColor;
-          });
-        }
-
-        block.userData.clicked = !block.userData.clicked;
-      });
+      this._initMouseEventListener(block);
     }.bind(this));
   }.bind(this));
 
@@ -10777,29 +10748,29 @@ Cube333.prototype.animate = function animate(operations) {
 };
 
 Cube333.prototype.operate = function operate(operations, animation) {
-  var _this2 = this;
+  var _this = this;
 
   this._operationsArray = this._parseOperations(operations);
 
   this._operationsArray.forEach(function (operation) {
-    var tempOperationGroup = _this2.parent.getObjectByName("tempOperationGroup");
+    var tempOperationGroup = _this.parent.getObjectByName("tempOperationGroup");
 
     if (tempOperationGroup) {
       if (tempOperationGroup.children.length) {
         while (tempOperationGroup.children.length) {
-          _this2.attach(tempOperationGroup.children[tempOperationGroup.children.length - 1]);
+          _this.attach(tempOperationGroup.children[tempOperationGroup.children.length - 1]);
         }
       }
 
-      _this2.parent.remove(tempOperationGroup);
+      _this.parent.remove(tempOperationGroup);
     }
 
-    var operationInfo = _this2._makeOperationInfo(operation);
+    var operationInfo = _this._makeOperationInfo(operation);
 
-    tempOperationGroup = _this2.parent.getObjectByName("tempOperationGroup");
+    tempOperationGroup = _this.parent.getObjectByName("tempOperationGroup");
     tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, operationInfo.angle * Math.PI / 180);
 
-    _this2._operator(operation, tempOperationGroup);
+    _this._operator(operation, tempOperationGroup);
   });
 
   this._operationsArray = [];
@@ -10823,6 +10794,8 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks() {
       block.position.x = coordVector.x * this.options.size.width;
       block.position.y = -coordVector.y * this.options.size.height;
       block.position.z = coordVector.z * this.options.size.depth;
+
+      this._initMouseEventListener(block);
     }.bind(this));
   }.bind(this));
 };
@@ -10837,6 +10810,53 @@ Cube333.prototype.toggleMirror = function toggleMirror(toggle) {
         result[0].style.visibility = toggle ? 'visible' : 'hidden';
       }
     });
+  });
+};
+
+Cube333.prototype._initMouseEventListener = function _initMouseEventListener(block) {
+  var _this2 = this;
+
+  block.element.addEventListener('mouseover', function (event) {
+    if (!_this2.options.hoverEnabled) return;
+    if (block.userData.clicked) return;
+    Array.from(block.element.children).forEach(function (child) {
+      if (child.className !== 'y' && child.className !== 'x' && child.className !== 'z' && !child.className.includes('m')) child.style.backgroundColor = _this2.options.hoverColor;
+    });
+  });
+  block.element.addEventListener('mouseout', function (event) {
+    if (!_this2.options.hoverEnabled) return;
+    if (block.userData.clicked) return;
+    Array.from(block.element.children).forEach(function (child) {
+      if (!child.className.includes('m')) child.style.backgroundColor = _this2.options.blockColor;
+    });
+  });
+  block.element.addEventListener('mousedown', function (event) {
+    if (!_this2.options.clickEnabled) return;
+
+    if (!block.userData.clicked) {
+      Array.from(block.element.children).forEach(function (child) {
+        if (child.className !== 'y' && child.className !== 'x' && child.className !== 'z' && !child.className.includes('m')) child.style.backgroundColor = _this2.options.clickColor;
+      });
+    } else {
+      Array.from(block.element.children).forEach(function (child) {
+        if (!child.className.includes('m')) child.style.backgroundColor = _this2.options.blockColor;
+      });
+    }
+
+    block.userData.clicked = !block.userData.clicked;
+  });
+};
+
+Cube333.prototype.unselectAllBlock = function unselectAllBlock() {
+  var _this3 = this;
+
+  this.children.forEach(function (block) {
+    if (block.userData.clicked) {
+      Array.from(block.element.children).forEach(function (child) {
+        if (child.className !== 'y' && child.className !== 'x' && child.className !== 'z' && !child.className.includes('m')) child.style.backgroundColor = _this3.options.blockColor;
+      });
+      block.userData.clicked = false;
+    }
   });
 };
 /**
@@ -10854,7 +10874,7 @@ Cube333.prototype.toggleMirror = function toggleMirror(toggle) {
 
 
 var RubiksCube = function RubiksCube(options) {
-  var _this3 = this;
+  var _this4 = this;
 
   Cube333.apply(this, [options]);
   this._stickers = {
@@ -10867,7 +10887,7 @@ var RubiksCube = function RubiksCube(options) {
 
   this._blocks.forEach(function (arr) {
     arr.forEach(function (coord, i) {
-      _this3._attachSticker(coord, arr[0], i);
+      _this4._attachSticker(coord, arr[0], i);
     });
   });
 };
@@ -10915,14 +10935,13 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
       }
 
       var sticker = document.createElement("div");
-      sticker.className = "sticker";
+      sticker.className = "sticker_" + faceRotate(sc, idx % 4);
       Object.assign(sticker.style, style);
       face[0].appendChild(sticker);
       var mirrorFace = element.getElementsByClassName('m' + sc);
 
       if (mirrorFace.length) {
         var mirrorSticker = sticker.cloneNode();
-        mirrorSticker.className = "mirror";
         mirrorFace[0].appendChild(mirrorSticker);
       }
     }
@@ -10936,13 +10955,35 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
 };
 
 RubiksCube.prototype.refreshCube = function refreshCube() {
-  var _this4 = this;
+  var _this5 = this;
 
   this._refreshBlocks();
 
   this._blocks.forEach(function (arr) {
     arr.forEach(function (coord, i) {
-      _this4._attachSticker(coord, arr[0], i);
+      _this5._attachSticker(coord, arr[0], i);
+    });
+  });
+};
+
+RubiksCube.prototype.refreshStickers = function refreshStickers() {
+  var _this6 = this;
+
+  var faces = this.children.map(function (child) {
+    return Array.from(child.element.children).filter(function (childEl) {
+      return !childEl.className.includes("x") && !childEl.className.includes("y") && !childEl.className.includes("z");
+    });
+  });
+  var facesString = ["f", "b", "u", "d", "r", "l"];
+  faces.forEach(function (face) {
+    face.forEach(function (child) {
+      facesString.forEach(function (faceString) {
+        var sticker = child.getElementsByClassName("sticker_" + faceString);
+
+        if (sticker.length) {
+          sticker[0].style.backgroundColor = _this6.options.stickerColorSet[faceString];
+        }
+      });
     });
   });
 };
