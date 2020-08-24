@@ -56,8 +56,9 @@ function init(){
 	// });
 
 	setTimeout(function(){
-		cube.options.blockColor = "white";
-		cube.refreshBlockColor();
+		cube.options.stickerColorSet["f"] = "black";
+		// cube.options.blockColor = "white";
+		cube.refreshStickers();
 	}, 5000)
 	
 	controls = new OrbitControls(camera, renderer.domElement);

@@ -10970,7 +10970,6 @@ RubiksCube.prototype.refreshStickers = function refreshStickers() {
   var _this6 = this;
 
   var faces = this.children.map(function (child) {
-    child.userData.clicked = false;
     return Array.from(child.element.children).filter(function (childEl) {
       return !childEl.className.includes("x") && !childEl.className.includes("y") && !childEl.className.includes("z");
     });
@@ -10993,9 +10992,15 @@ RubiksCube.prototype.refreshBlockColor = function refreshBlockColor() {
   var _this7 = this;
 
   var faces = this.children.forEach(function (child) {
-    Array.from(child.element.children).forEach(function (childEl) {
-      if (!childEl.className.includes('m')) childEl.style.backgroundColor = _this7.options.blockColor;
-    });
+    if (!child.userData.clicked) {
+      Array.from(child.element.children).forEach(function (childEl) {
+        if (!childEl.className.includes('m')) childEl.style.backgroundColor = _this7.options.blockColor;
+      });
+    } else {
+      Array.from(child.element.children).forEach(function (childEl) {
+        if (childEl.className.includes('x') || childEl.className.includes('y') || childEl.className.includes('z')) childEl.style.backgroundColor = _this7.options.blockColor;
+      });
+    }
   });
 };
 

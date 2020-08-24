@@ -626,7 +626,6 @@ RubiksCube.prototype.refreshCube = function refreshCube(){
 }
 RubiksCube.prototype.refreshStickers = function refreshStickers(){
 	const faces =this.children.map((child)=>{		
-		child.userData.clicked = false;	
 		return Array.from(child.element.children).filter((childEl)=> {
 			return !childEl.className.includes("x")
 			&& !childEl.className.includes("y")
@@ -647,11 +646,18 @@ RubiksCube.prototype.refreshStickers = function refreshStickers(){
 	})
 }
 RubiksCube.prototype.refreshBlockColor = function refreshBlockColor(){
-	const faces =this.children.forEach((child)=>{			
-		Array.from(child.element.children).forEach((childEl)=> {
-			if(!childEl.className.includes('m'))
-				childEl.style.backgroundColor = this.options.blockColor;
-		})
+	const faces =this.children.forEach((child)=>{	
+		if(!child.userData.clicked){
+			Array.from(child.element.children).forEach((childEl)=> {
+				if(!childEl.className.includes('m'))
+					childEl.style.backgroundColor = this.options.blockColor;
+			})
+		}else{
+			Array.from(child.element.children).forEach((childEl)=> {
+				if(childEl.className.includes('x') || childEl.className.includes('y') || childEl.className.includes('z'))
+					childEl.style.backgroundColor = this.options.blockColor;
+			})
+		}
 	})
 }
 export default RubiksCube ;
