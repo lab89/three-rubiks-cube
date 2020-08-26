@@ -490,11 +490,7 @@ Cube333.prototype._initMouseEventListener = function _initMouseEventListener(blo
 		if(!this.options.hoverEnabled) return;			
 		if(block.userData.clicked)	return;
 		Array.from(block.element.children).forEach((child)=>{					
-			if(child.className !== 'y' 
-			&& child.className !== 'x' 
-			&& child.className !== 'z'
-			&& !child.className.includes('m')
-			)
+			if(!child.className.includes('m'))
 				child.style.backgroundColor = this.options.hoverColor;		
 		});				
 	})
@@ -510,18 +506,15 @@ Cube333.prototype._initMouseEventListener = function _initMouseEventListener(blo
 		if(!this.options.clickEnabled) return;	
 		if(!block.userData.clicked){
 			Array.from(block.element.children).forEach((child)=>{					
-				if(child.className !== 'y' 
-				&& child.className !== 'x' 
-				&& child.className !== 'z'
-				&& !child.className.includes('m')
-				)
+				if(!child.className.includes('m'))
 					child.style.backgroundColor = this.options.clickColor;		
 			});				
 		}else{
 			Array.from(block.element.children).forEach((child)=>{
 				if(!child.className.includes('m'))
 					child.style.backgroundColor = this.options.blockColor;
-			})					}
+			})					
+		}
 		block.userData.clicked = !block.userData.clicked;
 	})
 }
@@ -529,11 +522,7 @@ Cube333.prototype.unselectAllBlock = function unselectAllBlock(){
 	this.children.forEach((block)=>{
 		if(block.userData.clicked){
 			Array.from(block.element.children).forEach((child)=>{					
-				if(child.className !== 'y' 
-				&& child.className !== 'x' 
-				&& child.className !== 'z'
-				&& !child.className.includes('m')
-				)
+				if(!child.className.includes('m'))
 					child.style.backgroundColor = this.options.blockColor;		
 			});			
 			block.userData.clicked = false;
@@ -583,9 +572,9 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
 	const blockCoord = block.name.split("");
 	const sticker_coords = stickerCoord.split(""); //sticker coord -> must transform! by faceRotate function
 	const style = {
-		width : this.options.fitment === "fully_fitted" ? "97%" : "90%",
-		height : this.options.fitment === "fully_fitted" ? "97%" : "90%",
-		margin : this.options.fitment === "fully_fitted" ? "5px" : "8px",
+		width : this.options.fitment === "fully_fitted" ? "95%" : "90%",
+		height : this.options.fitment === "fully_fitted" ? "95%" : "90%",
+		margin : this.options.fitment === "fully_fitted" ? "7px" : "8px",
 		borderRadius : "30px"
 	};
 	const element = block.element;

@@ -38,12 +38,12 @@ function init(){
 				"u": "rgba(230, 245, 252, 1)",
 				"d": "rgba(235, 253, 57, 1)",
 			},
-			fitment : "fully_fitted",
+			fitment : "",
 			mirror : true,
 			hoverEnabled : true,
 			clickEnabled : true,
 			hoverColor : "red",
-			clickColor : "rgb(131, 219, 28)",
+			clickColor : "black",
 			animateDuration : 1000
 		});
 	
@@ -56,7 +56,7 @@ function init(){
 	// });
 
 	setTimeout(function(){
-		cube.options.stickerColorSet["f"] = "black";
+		// cube.options.stickerColorSet["f"] = "black";
 		// cube.options.blockColor = "white";
 		cube.refreshStickers();
 		console.log(cube);
