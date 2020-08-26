@@ -49,7 +49,7 @@ function init(){
 	
 	scene.add(cube);	
 	
-	// cube.animate("F");
+	cube.animate("F");
 	// cube.addEventListener("operationCompleted", function(){		
 	// 	// cube.options.stickerColorSet["f"] = "black";
 	// 	cube.refreshCube();
@@ -59,6 +59,7 @@ function init(){
 		cube.options.stickerColorSet["f"] = "black";
 		// cube.options.blockColor = "white";
 		cube.refreshStickers();
+		console.log(cube);
 	}, 5000)
 	
 	controls = new OrbitControls(camera, renderer.domElement);

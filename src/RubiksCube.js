@@ -39,10 +39,11 @@ const Cube333 = function Cube333(options){
 		coordsArr.forEach(function(coordString){
 			const coords = coordString.split("");
 			const coordVector = new THREE.Vector3(this._coordInfo[coords[0]], this._coordInfo[coords[1]], this._coordInfo[coords[2]]);
-			const block = this._createBlock(this.options, coordVector);
+			const block = this._createBlock(this.options, coordVector);			
 			this.add(block);
 			block.userData = {
-				clicked : false
+				clicked : false,
+				origin : coordString
 			}
 			block.name = coordString; //init coord String
 			block.position.x = coordVector.x * this.options.size.width;
@@ -460,6 +461,10 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks(){
 			const coordVector = new THREE.Vector3(this._coordInfo[coords[0]], this._coordInfo[coords[1]], this._coordInfo[coords[2]]);
 			const block = this._createBlock(this.options, coordVector);
 			this.add(block);
+			block.userData = {
+				clicked : false,
+				origin : coordString
+			};
 			block.name = coordString; //init coord String
 			block.position.x = coordVector.x * this.options.size.width;
 			block.position.y = -coordVector.y * this.options.size.height;
