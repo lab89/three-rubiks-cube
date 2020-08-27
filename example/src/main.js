@@ -24,7 +24,7 @@ function init(){
 	
 	const cube = new RubiksCube(
 		{
-			blockColor : "cyan",
+			blockColor : "black",
 			size : {
 				width : 300,
 				height : 300,
@@ -38,7 +38,7 @@ function init(){
 				"u": "rgba(230, 245, 252, 1)",
 				"d": "rgba(235, 253, 57, 1)",
 			},
-			fitment : "",
+			fitment : "fitted",
 			mirror : true,
 			hoverEnabled : true,
 			clickEnabled : true,

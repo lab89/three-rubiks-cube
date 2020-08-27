@@ -148,29 +148,29 @@ Cube333.prototype._createBlock = function _createBlock(options, orientation){
 	back.style.transform = "translateX("+ (-options.size.width / 2) + "px)"  + "translateZ(" +  (options.size.depth  * -1 / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)" +  "rotate3d(0, 1, 0, -180deg)";
 	blockElement.appendChild(back);
 
+	// see through block plane
 	const xplane =  faceElement.cloneNode(true);
 	xplane.className = "z";
 	xplane.style.borderRadius = "0px";
-	xplane.style.width = options.size.width * 0.9 + "px";
-	xplane.style.height = options.size.height * 0.9 + "px";
+	xplane.style.width = options.size.width * 0.98 + "px";
+	xplane.style.height = options.size.height * 0.98 + "px";
 	xplane.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)" + "rotate3d(1, 0, 0, -90deg) ";
 	blockElement.appendChild(xplane);
 
-	// see through block plane
 	const yplane =  faceElement.cloneNode(true);
 	yplane.className = "y";
 	yplane.style.borderRadius = "0px";
 	yplane.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)";
-	yplane.style.width = options.size.width * 0.9 + "px";
-	yplane.style.height = options.size.height * 0.9 + "px";
+	yplane.style.width = options.size.width  + "px";
+	yplane.style.height = options.size.height * 0.98 + "px";
 	blockElement.appendChild(yplane);
 
 	const zplane =  faceElement.cloneNode(true);
 	zplane.className = "x";
 	zplane.style.borderRadius = "0px";
 	zplane.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)" + "rotate3d(0, 1, 0, 90deg) ";
-	zplane.style.width = options.size.width * 0.9 + "px";
-	zplane.style.height = options.size.height * 0.9 + "px";
+	zplane.style.width = options.size.width * 0.98 + "px";
+	zplane.style.height = options.size.height * 0.98 + "px";
 	blockElement.appendChild(zplane);
 
 	const m_top = faceElement.cloneNode(true);
@@ -572,9 +572,9 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
 	const blockCoord = block.name.split("");
 	const sticker_coords = stickerCoord.split(""); //sticker coord -> must transform! by faceRotate function
 	const style = {
-		width : this.options.fitment === "fully_fitted" ? "95%" : "90%",
-		height : this.options.fitment === "fully_fitted" ? "95%" : "90%",
-		margin : this.options.fitment === "fully_fitted" ? "7px" : "8px",
+		width : this.options.fitment === "fully_fitted" ? "97%" : "90%",
+		height : this.options.fitment === "fully_fitted" ? "97%" : "90%",
+		margin : this.options.fitment === "fully_fitted" ? "5px" : "8px",
 		borderRadius : "30px"
 	};
 	const element = block.element;
