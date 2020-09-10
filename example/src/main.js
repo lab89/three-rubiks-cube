@@ -9,7 +9,7 @@ init();
 animate();
 
 function init(){
-	camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
+	camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 1000000);
 	camera.position.x = 3000;
 	camera.position.z = 3000;
 	camera.position.y = 3000;
@@ -49,6 +49,7 @@ function init(){
 	
 	scene.add(cube);	
 	
+
 	cube.animate("F");
 	// cube.addEventListener("operationCompleted", function(){		
 	// 	// cube.options.stickerColorSet["f"] = "black";

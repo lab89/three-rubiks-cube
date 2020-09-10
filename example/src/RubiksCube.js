@@ -10303,6 +10303,8 @@ NNNCube.prototype = Object.create(three__WEBPACK_IMPORTED_MODULE_0__["Group"].pr
 NNNCube.prototype.constructor = NNNCube;
 
 var Cube333 = function Cube333(options) {
+  var _this = this;
+
   NNNCube.apply(this);
   console.log("**********************************");
   console.log("%c THREE JS RUBIKS CUBE!", 'background: #222; color: #bada55');
@@ -10322,24 +10324,25 @@ var Cube333 = function Cube333(options) {
   this._blocks.forEach(function (coordsArr) {
     coordsArr.forEach(function (coordString) {
       var coords = coordString.split("");
-      var coordVector = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](this._coordInfo[coords[0]], this._coordInfo[coords[1]], this._coordInfo[coords[2]]);
+      var coordVector = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](_this._coordInfo[coords[0]], _this._coordInfo[coords[1]], _this._coordInfo[coords[2]]);
 
-      var block = this._createBlock(this.options, coordVector);
+      var block = _this._createBlock(_this.options, coordVector);
 
-      this.add(block);
+      _this.add(block);
+
       block.userData = {
         clicked: false,
         origin: coordString
       };
       block.name = coordString; //init coord String
 
-      block.position.x = coordVector.x * this.options.size.width;
-      block.position.y = -coordVector.y * this.options.size.height;
-      block.position.z = coordVector.z * this.options.size.depth;
+      block.position.x = coordVector.x * _this.options.size.width;
+      block.position.y = -coordVector.y * _this.options.size.height;
+      block.position.z = coordVector.z * _this.options.size.depth;
 
-      this._initMouseEventListener(block);
-    }.bind(this));
-  }.bind(this));
+      _this._initMouseEventListener(block);
+    });
+  });
 
   this._operationsArray = [];
   this.addEventListener("operation", function (event) {
@@ -10349,7 +10352,7 @@ var Cube333 = function Cube333(options) {
     if (tempOperationGroup) {
       if (tempOperationGroup.children.length) {
         while (tempOperationGroup.children.length) {
-          this.attach(tempOperationGroup.children[tempOperationGroup.children.length - 1]);
+          this.attach(tempOperationGroup.children.shift());
         }
       }
 
@@ -10588,7 +10591,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return Array.from(child.name).includes("r");
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](1, 0, 0);
     angle = -90;
   } else if (operationString.includes("r")) {
@@ -10596,7 +10599,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return !Array.from(child.name).includes("l");
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](1, 0, 0);
     angle = -90;
   } else if (operationString.includes("L")) {
@@ -10604,7 +10607,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return Array.from(child.name).includes("l");
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-1, 0, 0);
     angle = -90;
   } else if (operationString.includes("l")) {
@@ -10612,7 +10615,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return !Array.from(child.name).includes("r");
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-1, 0, 0);
     angle = -90;
   } else if (operationString.includes("F")) {
@@ -10620,7 +10623,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return Array.from(child.name).includes("f");
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, -1);
     angle = 90;
   } else if (operationString.includes("f")) {
@@ -10628,7 +10631,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return !Array.from(child.name).includes("b");
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, -1);
     angle = 90;
   } else if (operationString.includes("B")) {
@@ -10636,7 +10639,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return Array.from(child.name).includes("b");
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 1);
     angle = 90;
   } else if (operationString.includes("b")) {
@@ -10644,7 +10647,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return !Array.from(child.name).includes("f");
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 1);
     angle = 90;
   } else if (operationString.includes("U")) {
@@ -10652,7 +10655,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return Array.from(child.name).includes("u");
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0);
     angle = -90;
   } else if (operationString.includes("u")) {
@@ -10660,7 +10663,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return !Array.from(child.name).includes("d");
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0);
     angle = -90;
   } else if (operationString.includes("D")) {
@@ -10668,7 +10671,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return Array.from(child.name).includes("d");
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, -1, 0);
     angle = -90;
   } else if (operationString.includes("d")) {
@@ -10676,7 +10679,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return !Array.from(child.name).includes("u");
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, -1, 0);
     angle = -90;
   } else if (operationString.includes("M")) {
@@ -10684,7 +10687,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return (child.name.match(/x/g) || []).length === 1 && (child.name.match(/f|u|b|d/g) || []).length === 2 || (child.name.match(/x/g) || []).length === 2 && /f|u|b|d/.test(child.name);
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](1, 0, 0);
     angle = 90;
   } else if (operationString.includes("E")) {
@@ -10692,7 +10695,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return (child.name.match(/x/g) || []).length === 1 && (child.name.match(/r|b|l|f/g) || []).length === 2 || (child.name.match(/x/g) || []).length === 2 && /r|b|l|f/.test(child.name);
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0);
     angle = 90;
   } else if (operationString.includes("S")) {
@@ -10700,26 +10703,26 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
       return (child.name.match(/x/g) || []).length === 1 && (child.name.match(/r|u|l|d/g) || []).length === 2 || (child.name.match(/x/g) || []).length === 2 && /r|u|l|d/.test(child.name);
     }).forEach(function (child) {
       tempOperationGroup.add(child);
-    }.bind(this));
+    });
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 1);
     angle = 90;
   } else if (operationString.includes("x")) {
     while (this.children.length) {
-      tempOperationGroup.add(this.children[this.children.length - 1]);
+      tempOperationGroup.add(this.children.shift());
     }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](1, 0, 0);
     angle = -90;
   } else if (operationString.includes("y")) {
     while (this.children.length) {
-      tempOperationGroup.add(this.children[this.children.length - 1]);
+      tempOperationGroup.add(this.children.shift());
     }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0);
     angle = 90;
   } else if (operationString.includes("z")) {
     while (this.children.length) {
-      tempOperationGroup.add(this.children[this.children.length - 1]);
+      tempOperationGroup.add(this.children.shift());
     }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 1);
@@ -10749,60 +10752,63 @@ Cube333.prototype.animate = function animate(operations) {
 };
 
 Cube333.prototype.operate = function operate(operations, animation) {
-  var _this = this;
+  var _this2 = this;
 
   this._operationsArray = this._parseOperations(operations);
 
   this._operationsArray.forEach(function (operation) {
-    var tempOperationGroup = _this.parent.getObjectByName("tempOperationGroup");
+    var tempOperationGroup = _this2.parent.getObjectByName("tempOperationGroup");
 
     if (tempOperationGroup) {
       if (tempOperationGroup.children.length) {
         while (tempOperationGroup.children.length) {
-          _this.attach(tempOperationGroup.children[tempOperationGroup.children.length - 1]);
+          _this2.attach(tempOperationGroup.children.shift());
         }
       }
 
-      _this.parent.remove(tempOperationGroup);
+      _this2.parent.remove(tempOperationGroup);
     }
 
-    var operationInfo = _this._makeOperationInfo(operation);
+    var operationInfo = _this2._makeOperationInfo(operation);
 
-    tempOperationGroup = _this.parent.getObjectByName("tempOperationGroup");
+    tempOperationGroup = _this2.parent.getObjectByName("tempOperationGroup");
     tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, operationInfo.angle * Math.PI / 180);
 
-    _this._operator(operation, tempOperationGroup);
+    _this2._operator(operation, tempOperationGroup);
   });
 
   this._operationsArray = [];
 };
 
 Cube333.prototype._refreshBlocks = function _refreshBlocks() {
+  var _this3 = this;
+
   while (this.children.length) {
-    this.remove(this.children[this.children.length - 1]);
+    this.remove(this.children.shift());
   }
 
   this._blocks.forEach(function (coordsArr) {
     coordsArr.forEach(function (coordString) {
       var coords = coordString.split("");
-      var coordVector = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](this._coordInfo[coords[0]], this._coordInfo[coords[1]], this._coordInfo[coords[2]]);
+      var coordVector = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](_this3._coordInfo[coords[0]], _this3._coordInfo[coords[1]], _this3._coordInfo[coords[2]]);
 
-      var block = this._createBlock(this.options, coordVector);
+      var block = _this3._createBlock(_this3.options, coordVector);
 
-      this.add(block);
+      _this3.add(block);
+
       block.userData = {
         clicked: false,
         origin: coordString
       };
       block.name = coordString; //init coord String
 
-      block.position.x = coordVector.x * this.options.size.width;
-      block.position.y = -coordVector.y * this.options.size.height;
-      block.position.z = coordVector.z * this.options.size.depth;
+      block.position.x = coordVector.x * _this3.options.size.width;
+      block.position.y = -coordVector.y * _this3.options.size.height;
+      block.position.z = coordVector.z * _this3.options.size.depth;
 
-      this._initMouseEventListener(block);
-    }.bind(this));
-  }.bind(this));
+      _this3._initMouseEventListener(block);
+    });
+  });
 };
 
 Cube333.prototype.toggleMirror = function toggleMirror(toggle) {
@@ -10819,32 +10825,32 @@ Cube333.prototype.toggleMirror = function toggleMirror(toggle) {
 };
 
 Cube333.prototype._initMouseEventListener = function _initMouseEventListener(block) {
-  var _this2 = this;
+  var _this4 = this;
 
   block.element.addEventListener('mouseover', function (event) {
-    if (!_this2.options.hoverEnabled) return;
+    if (!_this4.options.hoverEnabled) return;
     if (block.userData.clicked) return;
     Array.from(block.element.children).forEach(function (child) {
-      if (!child.className.includes('m')) child.style.backgroundColor = _this2.options.hoverColor;
+      if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.hoverColor;
     });
   });
   block.element.addEventListener('mouseout', function (event) {
-    if (!_this2.options.hoverEnabled) return;
+    if (!_this4.options.hoverEnabled) return;
     if (block.userData.clicked) return;
     Array.from(block.element.children).forEach(function (child) {
-      if (!child.className.includes('m')) child.style.backgroundColor = _this2.options.blockColor;
+      if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.blockColor;
     });
   });
   block.element.addEventListener('mousedown', function (event) {
-    if (!_this2.options.clickEnabled) return;
+    if (!_this4.options.clickEnabled) return;
 
     if (!block.userData.clicked) {
       Array.from(block.element.children).forEach(function (child) {
-        if (!child.className.includes('m')) child.style.backgroundColor = _this2.options.clickColor;
+        if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.clickColor;
       });
     } else {
       Array.from(block.element.children).forEach(function (child) {
-        if (!child.className.includes('m')) child.style.backgroundColor = _this2.options.blockColor;
+        if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.blockColor;
       });
     }
 
@@ -10853,33 +10859,70 @@ Cube333.prototype._initMouseEventListener = function _initMouseEventListener(blo
 };
 
 Cube333.prototype.unselectAllBlock = function unselectAllBlock() {
-  var _this3 = this;
+  var _this5 = this;
 
   this.children.forEach(function (block) {
     if (block.userData.clicked) {
       Array.from(block.element.children).forEach(function (child) {
-        if (!child.className.includes('m')) child.style.backgroundColor = _this3.options.blockColor;
+        if (!child.className.includes('m')) child.style.backgroundColor = _this5.options.blockColor;
       });
       block.userData.clicked = false;
     }
   });
 };
-/**
-* param
- *  blockColor : "black, white etc..",
- *  size : {
- *    width :
- *    height :
- *    depth :
- *  },
- *  fitment : ,
- *  stickerColorset : ,
- *  mirror : true / false
-* */
 
+Cube333.prototype.refreshCube = function refreshCube() {
+  var _this6 = this;
+
+  this._refreshBlocks();
+
+  this._blocks.forEach(function (arr) {
+    arr.forEach(function (coord, i) {
+      _this6._attachSticker(coord, arr[0], i);
+    });
+  });
+};
+
+Cube333.prototype.refreshStickers = function refreshStickers() {
+  var _this7 = this;
+
+  var faces = this.children.map(function (child) {
+    return Array.from(child.element.children).filter(function (childEl) {
+      return !childEl.className.includes("x") && !childEl.className.includes("y") && !childEl.className.includes("z");
+    });
+  });
+  var facesString = ["f", "b", "u", "d", "r", "l"];
+  faces.forEach(function (face) {
+    face.forEach(function (child) {
+      facesString.forEach(function (faceString) {
+        var sticker = child.getElementsByClassName("sticker_" + faceString);
+
+        if (sticker.length) {
+          sticker[0].style.backgroundColor = _this7.options.stickerColorSet[faceString];
+        }
+      });
+    });
+  });
+};
+
+Cube333.prototype.refreshBlockColor = function refreshBlockColor() {
+  var _this8 = this;
+
+  var faces = this.children.forEach(function (child) {
+    if (!child.userData.clicked) {
+      Array.from(child.element.children).forEach(function (childEl) {
+        if (!childEl.className.includes('m')) childEl.style.backgroundColor = _this8.options.blockColor;
+      });
+    } else {
+      Array.from(child.element.children).forEach(function (childEl) {
+        if (childEl.className.includes('x') || childEl.className.includes('y') || childEl.className.includes('z')) childEl.style.backgroundColor = _this8.options.blockColor;
+      });
+    }
+  });
+};
 
 var RubiksCube = function RubiksCube(options) {
-  var _this4 = this;
+  var _this9 = this;
 
   Cube333.apply(this, [options]);
   this._stickers = {
@@ -10892,7 +10935,7 @@ var RubiksCube = function RubiksCube(options) {
 
   this._blocks.forEach(function (arr) {
     arr.forEach(function (coord, i) {
-      _this4._attachSticker(coord, arr[0], i);
+      _this9._attachSticker(coord, arr[0], i);
     });
   });
 };
@@ -10901,6 +10944,8 @@ RubiksCube.prototype = Object.create(Cube333.prototype);
 RubiksCube.prototype.constructor = RubiksCube;
 
 RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, stickerCoord, idx) {
+  var _this10 = this;
+
   function faceRotate(text, i) {
     var arr = ["f", "r", "b", "l"];
     var index = arr.indexOf(text);
@@ -10928,13 +10973,13 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
 
     if (face.length) {
       Object.assign(style, {
-        backgroundColor: this.options.stickerColorSet[faceRotate(sc, idx % 4)]
+        backgroundColor: _this10.options.stickerColorSet[faceRotate(sc, idx % 4)]
       });
 
-      if (this._stickers[stickerCoord]) {
-        this._stickers[stickerCoord].forEach(function (radius) {
-          style[radius] = this.options.size.width * 0.3 + "px";
-        }.bind(this));
+      if (_this10._stickers[stickerCoord]) {
+        _this10._stickers[stickerCoord].forEach(function (radius) {
+          style[radius] = _this10.options.size.width * 0.3 + "px";
+        });
       } else {
         style["borderRadius"] = "50% 50% 50% 50%";
       }
@@ -10950,62 +10995,12 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
         mirrorFace[0].appendChild(mirrorSticker);
       }
     }
-  }.bind(this)); // remove empty mirror
+  }); // remove empty mirror
 
   var emptyMirror = Array.from(element.children).filter(function (el) {
     return el.className.includes('m') && el.children.length === 0;
   }).forEach(function (el) {
     return el.remove();
-  });
-};
-
-RubiksCube.prototype.refreshCube = function refreshCube() {
-  var _this5 = this;
-
-  this._refreshBlocks();
-
-  this._blocks.forEach(function (arr) {
-    arr.forEach(function (coord, i) {
-      _this5._attachSticker(coord, arr[0], i);
-    });
-  });
-};
-
-RubiksCube.prototype.refreshStickers = function refreshStickers() {
-  var _this6 = this;
-
-  var faces = this.children.map(function (child) {
-    return Array.from(child.element.children).filter(function (childEl) {
-      return !childEl.className.includes("x") && !childEl.className.includes("y") && !childEl.className.includes("z");
-    });
-  });
-  var facesString = ["f", "b", "u", "d", "r", "l"];
-  faces.forEach(function (face) {
-    face.forEach(function (child) {
-      facesString.forEach(function (faceString) {
-        var sticker = child.getElementsByClassName("sticker_" + faceString);
-
-        if (sticker.length) {
-          sticker[0].style.backgroundColor = _this6.options.stickerColorSet[faceString];
-        }
-      });
-    });
-  });
-};
-
-RubiksCube.prototype.refreshBlockColor = function refreshBlockColor() {
-  var _this7 = this;
-
-  var faces = this.children.forEach(function (child) {
-    if (!child.userData.clicked) {
-      Array.from(child.element.children).forEach(function (childEl) {
-        if (!childEl.className.includes('m')) childEl.style.backgroundColor = _this7.options.blockColor;
-      });
-    } else {
-      Array.from(child.element.children).forEach(function (childEl) {
-        if (childEl.className.includes('x') || childEl.className.includes('y') || childEl.className.includes('z')) childEl.style.backgroundColor = _this7.options.blockColor;
-      });
-    }
   });
 };
 
