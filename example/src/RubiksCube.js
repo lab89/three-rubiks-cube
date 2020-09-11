@@ -10309,6 +10309,7 @@ var Cube333 = function Cube333(options) {
   console.log("**********************************");
   console.log("%c THREE JS RUBIKS CUBE!", 'background: #222; color: #bada55');
   console.log("**********************************");
+  this.animationEnabled = true;
   this.options = options;
   this._coordInfo = {
     x: 0,
@@ -10346,58 +10347,61 @@ var Cube333 = function Cube333(options) {
 
   this._operationsArray = [];
   this.addEventListener("operation", function (event) {
-    //그룹 없애기
-    var tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+    //그룹 없애기		
+    if (this.animationEnabled) {
+      var inOutQuad = function inOutQuad(n) {
+        n *= 2;
+        if (n < 1) return 0.5 * n * n;
+        return -0.5 * (--n * (n - 2) - 1);
+      };
 
-    if (tempOperationGroup) {
-      if (tempOperationGroup.children.length) {
-        while (tempOperationGroup.children.length) {
-          this.attach(tempOperationGroup.children.shift());
+      var animation = function animation(timestamp) {
+        if (!start) start = timestamp;
+        var progress = timestamp - start;
+
+        if (progress <= this.options.animateDuration) {
+          tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);
+          window.requestAnimationFrame(animation.bind(this));
+        } else {
+          this._operator(this._operationsArray[event.index], tempOperationGroup);
+
+          this.animationEnabled = true;
+          this.dispatchEvent({
+            type: "operation",
+            index: event.index + 1
+          });
+          return;
         }
+      };
+
+      this.animationEnabled = false;
+      var tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+
+      if (tempOperationGroup) {
+        if (tempOperationGroup.children.length) {
+          while (tempOperationGroup.children.length) {
+            this.attach(tempOperationGroup.children.shift());
+          }
+        }
+
+        this.parent.remove(tempOperationGroup);
       }
 
-      this.parent.remove(tempOperationGroup);
-    }
-
-    if (event.index > this._operationsArray.length - 1) {
-      this._operationsArray = [];
-      this.dispatchEvent({
-        type: "operationCompleted"
-      });
-      return;
-    }
-
-    var operationInfo = this._makeOperationInfo(this._operationsArray[event.index]);
-
-    tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
-
-    function inOutQuad(n) {
-      n *= 2;
-      if (n < 1) return 0.5 * n * n;
-      return -0.5 * (--n * (n - 2) - 1);
-    }
-
-    var start = null;
-
-    function animation(timestamp) {
-      if (!start) start = timestamp;
-      var progress = timestamp - start;
-
-      if (progress <= this.options.animateDuration) {
-        tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);
-        window.requestAnimationFrame(animation.bind(this));
-      } else {
-        this._operator(this._operationsArray[event.index], tempOperationGroup);
-
+      if (event.index > this._operationsArray.length - 1) {
+        this._operationsArray = [];
+        this.animationEnabled = true;
         this.dispatchEvent({
-          type: "operation",
-          index: event.index + 1
+          type: "operationCompleted"
         });
         return;
       }
-    }
 
-    window.requestAnimationFrame(animation.bind(this));
+      var operationInfo = this._makeOperationInfo(this._operationsArray[event.index]);
+
+      tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+      var start = null;
+      window.requestAnimationFrame(animation.bind(this));
+    }
   }.bind(this));
 };
 
@@ -10751,37 +10755,8 @@ Cube333.prototype.animate = function animate(operations) {
   });
 };
 
-Cube333.prototype.operate = function operate(operations, animation) {
-  var _this2 = this;
-
-  this._operationsArray = this._parseOperations(operations);
-
-  this._operationsArray.forEach(function (operation) {
-    var tempOperationGroup = _this2.parent.getObjectByName("tempOperationGroup");
-
-    if (tempOperationGroup) {
-      if (tempOperationGroup.children.length) {
-        while (tempOperationGroup.children.length) {
-          _this2.attach(tempOperationGroup.children.shift());
-        }
-      }
-
-      _this2.parent.remove(tempOperationGroup);
-    }
-
-    var operationInfo = _this2._makeOperationInfo(operation);
-
-    tempOperationGroup = _this2.parent.getObjectByName("tempOperationGroup");
-    tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, operationInfo.angle * Math.PI / 180);
-
-    _this2._operator(operation, tempOperationGroup);
-  });
-
-  this._operationsArray = [];
-};
-
 Cube333.prototype._refreshBlocks = function _refreshBlocks() {
-  var _this3 = this;
+  var _this2 = this;
 
   while (this.children.length) {
     this.remove(this.children.shift());
@@ -10790,11 +10765,11 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks() {
   this._blocks.forEach(function (coordsArr) {
     coordsArr.forEach(function (coordString) {
       var coords = coordString.split("");
-      var coordVector = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](_this3._coordInfo[coords[0]], _this3._coordInfo[coords[1]], _this3._coordInfo[coords[2]]);
+      var coordVector = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](_this2._coordInfo[coords[0]], _this2._coordInfo[coords[1]], _this2._coordInfo[coords[2]]);
 
-      var block = _this3._createBlock(_this3.options, coordVector);
+      var block = _this2._createBlock(_this2.options, coordVector);
 
-      _this3.add(block);
+      _this2.add(block);
 
       block.userData = {
         clicked: false,
@@ -10802,11 +10777,11 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks() {
       };
       block.name = coordString; //init coord String
 
-      block.position.x = coordVector.x * _this3.options.size.width;
-      block.position.y = -coordVector.y * _this3.options.size.height;
-      block.position.z = coordVector.z * _this3.options.size.depth;
+      block.position.x = coordVector.x * _this2.options.size.width;
+      block.position.y = -coordVector.y * _this2.options.size.height;
+      block.position.z = coordVector.z * _this2.options.size.depth;
 
-      _this3._initMouseEventListener(block);
+      _this2._initMouseEventListener(block);
     });
   });
 };
@@ -10825,32 +10800,32 @@ Cube333.prototype.toggleMirror = function toggleMirror(toggle) {
 };
 
 Cube333.prototype._initMouseEventListener = function _initMouseEventListener(block) {
-  var _this4 = this;
+  var _this3 = this;
 
   block.element.addEventListener('mouseover', function (event) {
-    if (!_this4.options.hoverEnabled) return;
+    if (!_this3.options.hoverEnabled) return;
     if (block.userData.clicked) return;
     Array.from(block.element.children).forEach(function (child) {
-      if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.hoverColor;
+      if (!child.className.includes('m')) child.style.backgroundColor = _this3.options.hoverColor;
     });
   });
   block.element.addEventListener('mouseout', function (event) {
-    if (!_this4.options.hoverEnabled) return;
+    if (!_this3.options.hoverEnabled) return;
     if (block.userData.clicked) return;
     Array.from(block.element.children).forEach(function (child) {
-      if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.blockColor;
+      if (!child.className.includes('m')) child.style.backgroundColor = _this3.options.blockColor;
     });
   });
   block.element.addEventListener('mousedown', function (event) {
-    if (!_this4.options.clickEnabled) return;
+    if (!_this3.options.clickEnabled) return;
 
     if (!block.userData.clicked) {
       Array.from(block.element.children).forEach(function (child) {
-        if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.clickColor;
+        if (!child.className.includes('m')) child.style.backgroundColor = _this3.options.clickColor;
       });
     } else {
       Array.from(block.element.children).forEach(function (child) {
-        if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.blockColor;
+        if (!child.className.includes('m')) child.style.backgroundColor = _this3.options.blockColor;
       });
     }
 
@@ -10859,12 +10834,12 @@ Cube333.prototype._initMouseEventListener = function _initMouseEventListener(blo
 };
 
 Cube333.prototype.unselectAllBlock = function unselectAllBlock() {
-  var _this5 = this;
+  var _this4 = this;
 
   this.children.forEach(function (block) {
     if (block.userData.clicked) {
       Array.from(block.element.children).forEach(function (child) {
-        if (!child.className.includes('m')) child.style.backgroundColor = _this5.options.blockColor;
+        if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.blockColor;
       });
       block.userData.clicked = false;
     }
@@ -10872,19 +10847,19 @@ Cube333.prototype.unselectAllBlock = function unselectAllBlock() {
 };
 
 Cube333.prototype.refreshCube = function refreshCube() {
-  var _this6 = this;
+  var _this5 = this;
 
   this._refreshBlocks();
 
   this._blocks.forEach(function (arr) {
     arr.forEach(function (coord, i) {
-      _this6._attachSticker(coord, arr[0], i);
+      _this5._attachSticker(coord, arr[0], i);
     });
   });
 };
 
 Cube333.prototype.refreshStickers = function refreshStickers() {
-  var _this7 = this;
+  var _this6 = this;
 
   var faces = this.children.map(function (child) {
     return Array.from(child.element.children).filter(function (childEl) {
@@ -10898,7 +10873,7 @@ Cube333.prototype.refreshStickers = function refreshStickers() {
         var sticker = child.getElementsByClassName("sticker_" + faceString);
 
         if (sticker.length) {
-          sticker[0].style.backgroundColor = _this7.options.stickerColorSet[faceString];
+          sticker[0].style.backgroundColor = _this6.options.stickerColorSet[faceString];
         }
       });
     });
@@ -10906,23 +10881,23 @@ Cube333.prototype.refreshStickers = function refreshStickers() {
 };
 
 Cube333.prototype.refreshBlockColor = function refreshBlockColor() {
-  var _this8 = this;
+  var _this7 = this;
 
   var faces = this.children.forEach(function (child) {
     if (!child.userData.clicked) {
       Array.from(child.element.children).forEach(function (childEl) {
-        if (!childEl.className.includes('m')) childEl.style.backgroundColor = _this8.options.blockColor;
+        if (!childEl.className.includes('m')) childEl.style.backgroundColor = _this7.options.blockColor;
       });
     } else {
       Array.from(child.element.children).forEach(function (childEl) {
-        if (childEl.className.includes('x') || childEl.className.includes('y') || childEl.className.includes('z')) childEl.style.backgroundColor = _this8.options.blockColor;
+        if (childEl.className.includes('x') || childEl.className.includes('y') || childEl.className.includes('z')) childEl.style.backgroundColor = _this7.options.blockColor;
       });
     }
   });
 };
 
 var RubiksCube = function RubiksCube(options) {
-  var _this9 = this;
+  var _this8 = this;
 
   Cube333.apply(this, [options]);
   this._stickers = {
@@ -10935,7 +10910,7 @@ var RubiksCube = function RubiksCube(options) {
 
   this._blocks.forEach(function (arr) {
     arr.forEach(function (coord, i) {
-      _this9._attachSticker(coord, arr[0], i);
+      _this8._attachSticker(coord, arr[0], i);
     });
   });
 };
@@ -10944,7 +10919,7 @@ RubiksCube.prototype = Object.create(Cube333.prototype);
 RubiksCube.prototype.constructor = RubiksCube;
 
 RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, stickerCoord, idx) {
-  var _this10 = this;
+  var _this9 = this;
 
   function faceRotate(text, i) {
     var arr = ["f", "r", "b", "l"];
@@ -10973,12 +10948,12 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
 
     if (face.length) {
       Object.assign(style, {
-        backgroundColor: _this10.options.stickerColorSet[faceRotate(sc, idx % 4)]
+        backgroundColor: _this9.options.stickerColorSet[faceRotate(sc, idx % 4)]
       });
 
-      if (_this10._stickers[stickerCoord]) {
-        _this10._stickers[stickerCoord].forEach(function (radius) {
-          style[radius] = _this10.options.size.width * 0.3 + "px";
+      if (_this9._stickers[stickerCoord]) {
+        _this9._stickers[stickerCoord].forEach(function (radius) {
+          style[radius] = _this9.options.size.width * 0.3 + "px";
         });
       } else {
         style["borderRadius"] = "50% 50% 50% 50%";

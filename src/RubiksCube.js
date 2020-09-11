@@ -13,6 +13,7 @@ const Cube333 = function Cube333(options){
 	console.log("**********************************")
 	console.log("%c THREE JS RUBIKS CUBE!", 'background: #222; color: #bada55')
 	console.log("**********************************")
+	this.animationEnabled = true;
 	this.options = options;
 	this._coordInfo = {
 		x : 0,
@@ -55,43 +56,49 @@ const Cube333 = function Cube333(options){
 
 	this._operationsArray = [];
 	this.addEventListener("operation", function(event){
-		//그룹 없애기
-		let tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
-		if(tempOperationGroup){
-			if(tempOperationGroup.children.length){
-				while(tempOperationGroup.children.length){
-					this.attach(tempOperationGroup.children.shift())
+		//그룹 없애기		
+		if(this.animationEnabled){
+			this.animationEnabled = false;
+			let tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+			if(tempOperationGroup){
+				if(tempOperationGroup.children.length){
+					while(tempOperationGroup.children.length){
+						this.attach(tempOperationGroup.children.shift())
+					}
+				}
+				this.parent.remove(tempOperationGroup);
+			}
+			if(event.index > this._operationsArray.length - 1) {
+				this._operationsArray = [];
+				this.animationEnabled = true;
+				this.dispatchEvent({type : "operationCompleted"});
+				return
+			}
+
+			const operationInfo = this._makeOperationInfo(this._operationsArray[event.index]);
+			tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+			function inOutQuad(n){
+				n *= 2;
+				if (n < 1) return 0.5 * n * n;
+				return - 0.5 * (--n * (n - 2) - 1);
+			}
+			let start = null;
+			function animation(timestamp){
+				if (!start) start = timestamp;
+				const progress = timestamp - start;
+				if (progress <= this.options.animateDuration) {
+					tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);
+					window.requestAnimationFrame(animation.bind(this));
+				}else{
+					this._operator(this._operationsArray[event.index], tempOperationGroup);				
+					this.animationEnabled = true;
+					this.dispatchEvent({type : "operation", index : event.index + 1});
+					return;
 				}
 			}
-			this.parent.remove(tempOperationGroup);
+			window.requestAnimationFrame(animation.bind(this));
 		}
-
-		if(event.index > this._operationsArray.length - 1) {
-			this._operationsArray = [];
-			this.dispatchEvent({type : "operationCompleted"});
-			return
-		}
-		const operationInfo = this._makeOperationInfo(this._operationsArray[event.index]);
-		tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
-		function inOutQuad(n){
-			n *= 2;
-			if (n < 1) return 0.5 * n * n;
-			return - 0.5 * (--n * (n - 2) - 1);
-		}
-		let start = null;
-		function animation(timestamp){
-			if (!start) start = timestamp;
-			const progress = timestamp - start;
-			if (progress <= this.options.animateDuration) {
-				tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);
-				window.requestAnimationFrame(animation.bind(this));
-			}else{
-				this._operator(this._operationsArray[event.index], tempOperationGroup);
-				this.dispatchEvent({type : "operation", index : event.index + 1});
-				return;
-			}
-		}
-		window.requestAnimationFrame(animation.bind(this));
+		
 	}.bind(this))
 	
 };
@@ -432,25 +439,6 @@ Cube333.prototype.animate = function animate(operations){
 	this._operationsArray = this._parseOperations(operations);
 	this.dispatchEvent({ type: 'operation', index: 0 })
 };
-Cube333.prototype.operate = function operate(operations, animation){
-	this._operationsArray = this._parseOperations(operations);
-	this._operationsArray.forEach((operation)=>{
-		let tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
-		if(tempOperationGroup){
-			if(tempOperationGroup.children.length){
-				while(tempOperationGroup.children.length){
-					this.attach(tempOperationGroup.children.shift())
-				}
-			}
-			this.parent.remove(tempOperationGroup);
-		}		
-		const operationInfo = this._makeOperationInfo(operation);
-		tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
-		tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, operationInfo.angle * Math.PI / 180);
-		this._operator(operation, tempOperationGroup);
-	})	
-	this._operationsArray = [];
-}
 Cube333.prototype._refreshBlocks = function _refreshBlocks(){
 	while(this.children.length){
 		this.remove(this.children.shift())
