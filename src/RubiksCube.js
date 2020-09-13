@@ -258,7 +258,7 @@ Cube333.prototype._operator = function _operator(operation, operationGroup){
 		"l" : ["f", "d", "b", "u"],
 		"F" : ["l", "u", "r", "d"],
 		"f" : ["l", "u", "r", "d"],
-		"Z" : ["l", "u", "r", "d"],
+		"z" : ["l", "u", "r", "d"],
 		"M" : ["u", "f", "d", "b"],
 		"B" : ["d", "r", "u", "l"]
 	};
@@ -441,7 +441,9 @@ Cube333.prototype.animate = function animate(operations){
 };
 Cube333.prototype._refreshBlocks = function _refreshBlocks(){
 	while(this.children.length){
-		this.remove(this.children.shift())
+		const block = this.children.shift()
+		block.element.remove();
+		this.remove(block) // remove block
 	}
 	this._blocks.forEach((coordsArr)=>{
 		coordsArr.forEach((coordString)=>{
@@ -517,7 +519,7 @@ Cube333.prototype.unselectAllBlock = function unselectAllBlock(){
 		}
 	})
 }
-Cube333.prototype.refreshCube = function refreshCube(){
+Cube333.prototype.refreshCube = function refreshCube(){	
 	this._refreshBlocks();
 	this._blocks.forEach((arr) => {
 		arr.forEach((coord, i) => {

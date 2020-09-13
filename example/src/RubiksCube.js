@@ -10545,7 +10545,7 @@ Cube333.prototype._operator = function _operator(operation, operationGroup) {
     "l": ["f", "d", "b", "u"],
     "F": ["l", "u", "r", "d"],
     "f": ["l", "u", "r", "d"],
-    "Z": ["l", "u", "r", "d"],
+    "z": ["l", "u", "r", "d"],
     "M": ["u", "f", "d", "b"],
     "B": ["d", "r", "u", "l"]
   };
@@ -10759,7 +10759,9 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks() {
   var _this2 = this;
 
   while (this.children.length) {
-    this.remove(this.children.shift());
+    var block = this.children.shift();
+    block.element.remove();
+    this.remove(block); // remove block
   }
 
   this._blocks.forEach(function (coordsArr) {

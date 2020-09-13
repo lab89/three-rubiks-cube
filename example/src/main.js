@@ -50,7 +50,7 @@ function init(){
 	scene.add(cube);	
 	
 
-	cube.animate("F");
+	cube.animate("FRUD");
 	// cube.addEventListener("operationCompleted", function(){		
 	// 	// cube.options.stickerColorSet["f"] = "black";
 	// 	cube.refreshCube();
@@ -59,7 +59,9 @@ function init(){
 	setTimeout(function(){
 		// cube.options.stickerColorSet["f"] = "black";
 		// cube.options.blockColor = "white";
-		cube.refreshStickers();
+		cube.refreshCube();
+		cube.animate("B");
+
 		console.log(cube);
 	}, 5000)
 	
