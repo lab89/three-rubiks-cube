@@ -10761,6 +10761,9 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks() {
   while (this.children.length) {
     var block = this.children.shift();
     block.element.remove();
+    block.removeEventListener('click');
+    block.removeEventListener('mouseover');
+    block.removeEventListener('mouseout');
     this.remove(block); // remove block
   }
 
@@ -10788,46 +10791,49 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks() {
   });
 };
 
-Cube333.prototype.toggleMirror = function toggleMirror(toggle) {
+Cube333.prototype.toggleMirror = function toggleMirror() {
+  var _this3 = this;
+
+  this.options.mirror = !this.options.mirror;
   var faces = ["f", "b", "u", "d", "l", "r"];
   this.children.forEach(function (child) {
     faces.forEach(function (face) {
       var result = child.element.getElementsByClassName("m" + face);
 
       if (result.length) {
-        result[0].style.visibility = toggle ? 'visible' : 'hidden';
+        result[0].style.visibility = _this3.options.mirror ? 'visible' : 'hidden';
       }
     });
   });
 };
 
 Cube333.prototype._initMouseEventListener = function _initMouseEventListener(block) {
-  var _this3 = this;
+  var _this4 = this;
 
   block.element.addEventListener('mouseover', function (event) {
-    if (!_this3.options.hoverEnabled) return;
+    if (!_this4.options.hoverEnabled) return;
     if (block.userData.clicked) return;
     Array.from(block.element.children).forEach(function (child) {
-      if (!child.className.includes('m')) child.style.backgroundColor = _this3.options.hoverColor;
+      if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.hoverColor;
     });
   });
   block.element.addEventListener('mouseout', function (event) {
-    if (!_this3.options.hoverEnabled) return;
+    if (!_this4.options.hoverEnabled) return;
     if (block.userData.clicked) return;
     Array.from(block.element.children).forEach(function (child) {
-      if (!child.className.includes('m')) child.style.backgroundColor = _this3.options.blockColor;
+      if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.blockColor;
     });
   });
   block.element.addEventListener('mousedown', function (event) {
-    if (!_this3.options.clickEnabled) return;
+    if (!_this4.options.clickEnabled) return;
 
     if (!block.userData.clicked) {
       Array.from(block.element.children).forEach(function (child) {
-        if (!child.className.includes('m')) child.style.backgroundColor = _this3.options.clickColor;
+        if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.clickColor;
       });
     } else {
       Array.from(block.element.children).forEach(function (child) {
-        if (!child.className.includes('m')) child.style.backgroundColor = _this3.options.blockColor;
+        if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.blockColor;
       });
     }
 
@@ -10836,12 +10842,12 @@ Cube333.prototype._initMouseEventListener = function _initMouseEventListener(blo
 };
 
 Cube333.prototype.unselectAllBlock = function unselectAllBlock() {
-  var _this4 = this;
+  var _this5 = this;
 
   this.children.forEach(function (block) {
     if (block.userData.clicked) {
       Array.from(block.element.children).forEach(function (child) {
-        if (!child.className.includes('m')) child.style.backgroundColor = _this4.options.blockColor;
+        if (!child.className.includes('m')) child.style.backgroundColor = _this5.options.blockColor;
       });
       block.userData.clicked = false;
     }
@@ -10849,19 +10855,19 @@ Cube333.prototype.unselectAllBlock = function unselectAllBlock() {
 };
 
 Cube333.prototype.refreshCube = function refreshCube() {
-  var _this5 = this;
+  var _this6 = this;
 
   this._refreshBlocks();
 
   this._blocks.forEach(function (arr) {
     arr.forEach(function (coord, i) {
-      _this5._attachSticker(coord, arr[0], i);
+      _this6._attachSticker(coord, arr[0], i);
     });
   });
 };
 
 Cube333.prototype.refreshStickers = function refreshStickers() {
-  var _this6 = this;
+  var _this7 = this;
 
   var faces = this.children.map(function (child) {
     return Array.from(child.element.children).filter(function (childEl) {
@@ -10875,7 +10881,7 @@ Cube333.prototype.refreshStickers = function refreshStickers() {
         var sticker = child.getElementsByClassName("sticker_" + faceString);
 
         if (sticker.length) {
-          sticker[0].style.backgroundColor = _this6.options.stickerColorSet[faceString];
+          sticker[0].style.backgroundColor = _this7.options.stickerColorSet[faceString];
         }
       });
     });
@@ -10883,23 +10889,23 @@ Cube333.prototype.refreshStickers = function refreshStickers() {
 };
 
 Cube333.prototype.refreshBlockColor = function refreshBlockColor() {
-  var _this7 = this;
+  var _this8 = this;
 
   var faces = this.children.forEach(function (child) {
     if (!child.userData.clicked) {
       Array.from(child.element.children).forEach(function (childEl) {
-        if (!childEl.className.includes('m')) childEl.style.backgroundColor = _this7.options.blockColor;
+        if (!childEl.className.includes('m')) childEl.style.backgroundColor = _this8.options.blockColor;
       });
     } else {
       Array.from(child.element.children).forEach(function (childEl) {
-        if (childEl.className.includes('x') || childEl.className.includes('y') || childEl.className.includes('z')) childEl.style.backgroundColor = _this7.options.blockColor;
+        if (childEl.className.includes('x') || childEl.className.includes('y') || childEl.className.includes('z')) childEl.style.backgroundColor = _this8.options.blockColor;
       });
     }
   });
 };
 
 var RubiksCube = function RubiksCube(options) {
-  var _this8 = this;
+  var _this9 = this;
 
   Cube333.apply(this, [options]);
   this._stickers = {
@@ -10912,7 +10918,7 @@ var RubiksCube = function RubiksCube(options) {
 
   this._blocks.forEach(function (arr) {
     arr.forEach(function (coord, i) {
-      _this8._attachSticker(coord, arr[0], i);
+      _this9._attachSticker(coord, arr[0], i);
     });
   });
 };
@@ -10921,7 +10927,7 @@ RubiksCube.prototype = Object.create(Cube333.prototype);
 RubiksCube.prototype.constructor = RubiksCube;
 
 RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, stickerCoord, idx) {
-  var _this9 = this;
+  var _this10 = this;
 
   function faceRotate(text, i) {
     var arr = ["f", "r", "b", "l"];
@@ -10950,12 +10956,12 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
 
     if (face.length) {
       Object.assign(style, {
-        backgroundColor: _this9.options.stickerColorSet[faceRotate(sc, idx % 4)]
+        backgroundColor: _this10.options.stickerColorSet[faceRotate(sc, idx % 4)]
       });
 
-      if (_this9._stickers[stickerCoord]) {
-        _this9._stickers[stickerCoord].forEach(function (radius) {
-          style[radius] = _this9.options.size.width * 0.3 + "px";
+      if (_this10._stickers[stickerCoord]) {
+        _this10._stickers[stickerCoord].forEach(function (radius) {
+          style[radius] = _this10.options.size.width * 0.3 + "px";
         });
       } else {
         style["borderRadius"] = "50% 50% 50% 50%";

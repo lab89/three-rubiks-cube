@@ -443,6 +443,10 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks(){
 	while(this.children.length){
 		const block = this.children.shift()
 		block.element.remove();
+		block.removeEventListener('click');
+		block.removeEventListener('mouseover');
+		block.removeEventListener('mouseout');
+
 		this.remove(block) // remove block
 	}
 	this._blocks.forEach((coordsArr)=>{
@@ -463,13 +467,14 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks(){
 		})
 	});
 }
-Cube333.prototype.toggleMirror = function toggleMirror(toggle){
+Cube333.prototype.toggleMirror = function toggleMirror(){
+	this.options.mirror = !this.options.mirror;
 	const faces = ["f", "b", "u", "d", "l", "r"]
 	this.children.forEach((child)=>{
 		faces.forEach((face)=>{
 			const result = child.element.getElementsByClassName("m" + face);
 			if(result.length){
-				result[0].style.visibility = toggle ? 'visible' : 'hidden';
+				result[0].style.visibility = this.options.mirror ? 'visible' : 'hidden';
 			}
 		})
 	})

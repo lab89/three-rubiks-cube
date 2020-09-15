@@ -60,8 +60,7 @@ function init(){
 		// cube.options.stickerColorSet["f"] = "black";
 		// cube.options.blockColor = "white";
 		cube.refreshCube();
-		cube.animate("B");
-
+		cube.toggleMirror();
 		console.log(cube);
 	}, 5000)
 	
