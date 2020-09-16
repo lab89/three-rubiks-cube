@@ -468,7 +468,6 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks(){
 	});
 }
 Cube333.prototype.toggleMirror = function toggleMirror(){
-	this.options.mirror = !this.options.mirror;
 	const faces = ["f", "b", "u", "d", "l", "r"]
 	this.children.forEach((child)=>{
 		faces.forEach((face)=>{
