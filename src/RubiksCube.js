@@ -57,6 +57,7 @@ const Cube333 = function Cube333(options){
 	this._operationsArray = [];
 	this.addEventListener("operation", function(event){
 		//그룹 없애기		
+		console.log("aa");
 		if(this.animationEnabled){
 			this.animationEnabled = false;
 			let tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
@@ -566,6 +567,26 @@ Cube333.prototype.refreshBlockColor = function refreshBlockColor(){
 			})
 		}
 	})
+}
+Cube333.prototype.immediateOperate = function immediateOperate(operations){
+	this._operationsArray = this._parseOperations(operations);
+	this._operationsArray.forEach((operation)=>{
+		let tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+		if(tempOperationGroup){
+			if(tempOperationGroup.children.length){
+				while(tempOperationGroup.children.length){
+					this.attach(tempOperationGroup.children.shift())
+				}
+			}
+			this.parent.remove(tempOperationGroup);
+		}
+		const operationInfo = this._makeOperationInfo(operation);
+		tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+		tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, operationInfo.angle * Math.PI / 180);
+		this._operator(operation, tempOperationGroup);
+	})
+	this._operationsArray = [];
+	this.dispatchEvent({type : "operationCompleted"});
 }
 
 const RubiksCube = function(options){

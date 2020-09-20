@@ -10348,6 +10348,8 @@ var Cube333 = function Cube333(options) {
   this._operationsArray = [];
   this.addEventListener("operation", function (event) {
     //그룹 없애기		
+    console.log("aa");
+
     if (this.animationEnabled) {
       var inOutQuad = function inOutQuad(n) {
         n *= 2;
@@ -10794,7 +10796,6 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks() {
 Cube333.prototype.toggleMirror = function toggleMirror() {
   var _this3 = this;
 
-  this.options.mirror = !this.options.mirror;
   var faces = ["f", "b", "u", "d", "l", "r"];
   this.children.forEach(function (child) {
     faces.forEach(function (face) {
@@ -10904,8 +10905,40 @@ Cube333.prototype.refreshBlockColor = function refreshBlockColor() {
   });
 };
 
-var RubiksCube = function RubiksCube(options) {
+Cube333.prototype.immediateOperate = function immediateOperate(operations) {
   var _this9 = this;
+
+  this._operationsArray = this._parseOperations(operations);
+
+  this._operationsArray.forEach(function (operation) {
+    var tempOperationGroup = _this9.parent.getObjectByName("tempOperationGroup");
+
+    if (tempOperationGroup) {
+      if (tempOperationGroup.children.length) {
+        while (tempOperationGroup.children.length) {
+          _this9.attach(tempOperationGroup.children.shift());
+        }
+      }
+
+      _this9.parent.remove(tempOperationGroup);
+    }
+
+    var operationInfo = _this9._makeOperationInfo(operation);
+
+    tempOperationGroup = _this9.parent.getObjectByName("tempOperationGroup");
+    tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, operationInfo.angle * Math.PI / 180);
+
+    _this9._operator(operation, tempOperationGroup);
+  });
+
+  this._operationsArray = [];
+  this.dispatchEvent({
+    type: "operationCompleted"
+  });
+};
+
+var RubiksCube = function RubiksCube(options) {
+  var _this10 = this;
 
   Cube333.apply(this, [options]);
   this._stickers = {
@@ -10918,7 +10951,7 @@ var RubiksCube = function RubiksCube(options) {
 
   this._blocks.forEach(function (arr) {
     arr.forEach(function (coord, i) {
-      _this9._attachSticker(coord, arr[0], i);
+      _this10._attachSticker(coord, arr[0], i);
     });
   });
 };
@@ -10927,7 +10960,7 @@ RubiksCube.prototype = Object.create(Cube333.prototype);
 RubiksCube.prototype.constructor = RubiksCube;
 
 RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, stickerCoord, idx) {
-  var _this10 = this;
+  var _this11 = this;
 
   function faceRotate(text, i) {
     var arr = ["f", "r", "b", "l"];
@@ -10956,12 +10989,12 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
 
     if (face.length) {
       Object.assign(style, {
-        backgroundColor: _this10.options.stickerColorSet[faceRotate(sc, idx % 4)]
+        backgroundColor: _this11.options.stickerColorSet[faceRotate(sc, idx % 4)]
       });
 
-      if (_this10._stickers[stickerCoord]) {
-        _this10._stickers[stickerCoord].forEach(function (radius) {
-          style[radius] = _this10.options.size.width * 0.3 + "px";
+      if (_this11._stickers[stickerCoord]) {
+        _this11._stickers[stickerCoord].forEach(function (radius) {
+          style[radius] = _this11.options.size.width * 0.3 + "px";
         });
       } else {
         style["borderRadius"] = "50% 50% 50% 50%";

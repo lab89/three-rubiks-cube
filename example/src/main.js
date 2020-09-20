@@ -48,21 +48,22 @@ function init(){
 		});
 	
 	scene.add(cube);	
+	cube.addEventListener("operationCompleted", function(){				
+		console.log("??")
+		// cube.refreshCube();
+	});
+
+	cube.immediateOperate("FRUD");
+	cube.animate("F")
 	
 
-	cube.animate("FRUD");
-	// cube.addEventListener("operationCompleted", function(){		
+	// setTimeout(function(){
 	// 	// cube.options.stickerColorSet["f"] = "black";
+	// 	// cube.options.blockColor = "white";
 	// 	cube.refreshCube();
-	// });
-
-	setTimeout(function(){
-		// cube.options.stickerColorSet["f"] = "black";
-		// cube.options.blockColor = "white";
-		cube.refreshCube();
-		cube.toggleMirror();
-		console.log(cube);
-	}, 5000)
+	// 	cube.toggleMirror();
+	// 	console.log(cube);
+	// }, 5000)
 	
 	controls = new OrbitControls(camera, renderer.domElement);
 	controls.enableZoom = true;
