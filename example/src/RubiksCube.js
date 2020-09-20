@@ -10932,9 +10932,17 @@ Cube333.prototype.immediateOperate = function immediateOperate(operations) {
   });
 
   this._operationsArray = [];
-  this.dispatchEvent({
-    type: "operationCompleted"
-  });
+  var tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+
+  if (tempOperationGroup) {
+    if (tempOperationGroup.children.length) {
+      while (tempOperationGroup.children.length) {
+        this.attach(tempOperationGroup.children.shift());
+      }
+    }
+
+    this.parent.remove(tempOperationGroup);
+  }
 };
 
 var RubiksCube = function RubiksCube(options) {

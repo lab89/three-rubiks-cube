@@ -443,13 +443,13 @@ Cube333.prototype.animate = function animate(operations){
 Cube333.prototype._refreshBlocks = function _refreshBlocks(){
 	while(this.children.length){
 		const block = this.children.shift()
-		block.element.remove();
+		block.element.remove();		
 		block.removeEventListener('click');
 		block.removeEventListener('mouseover');
 		block.removeEventListener('mouseout');
-
 		this.remove(block) // remove block
 	}
+
 	this._blocks.forEach((coordsArr)=>{
 		coordsArr.forEach((coordString)=>{
 			const coords = coordString.split("");
@@ -586,7 +586,16 @@ Cube333.prototype.immediateOperate = function immediateOperate(operations){
 		this._operator(operation, tempOperationGroup);
 	})
 	this._operationsArray = [];
-	this.dispatchEvent({type : "operationCompleted"});
+
+	let tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+	if(tempOperationGroup){
+		if(tempOperationGroup.children.length){
+			while(tempOperationGroup.children.length){
+				this.attach(tempOperationGroup.children.shift())
+			}
+		}
+		this.parent.remove(tempOperationGroup);
+	}
 }
 
 const RubiksCube = function(options){

@@ -52,9 +52,10 @@ function init(){
 		console.log("??")
 		// cube.refreshCube();
 	});
-
-	cube.immediateOperate("FRUD");
-	cube.animate("F")
+	cube.refreshCube();
+	cube.immediateOperate("RURU");
+	cube.refreshCube();
+	cube.animate("RUF")
 	
 
 	// setTimeout(function(){
