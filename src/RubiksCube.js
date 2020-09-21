@@ -471,7 +471,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 		axis : axis
 	}
 };
-Cube333.prototype.animate = function animate(operations){
+Cube333.prototype.operateWidthAnimation = function operateWidthAnimation(operations){
 	this._operationsArray = this._parseOperations(operations);
 	this.dispatchEvent({ type: 'operation', index: 0 })
 };
@@ -503,7 +503,7 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks(){
 		})
 	});
 }
-Cube333.prototype.toggleMirror = function toggleMirror(){
+Cube333.prototype.refreshMirrorSticker = function refreshMirrorSticker(){
 	const faces = ["f", "b", "u", "d", "l", "r"]
 	this.children.forEach((child)=>{
 		faces.forEach((face)=>{
@@ -603,7 +603,7 @@ Cube333.prototype.refreshBlockColor = function refreshBlockColor(){
 		}
 	})
 }
-Cube333.prototype.immediateOperate = function immediateOperate(operations){
+Cube333.prototype.operate = function operate(operations){
 	this._operationsArray = this._parseOperations(operations);
 	this._operationsArray.forEach((operation)=>{
 		let tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");

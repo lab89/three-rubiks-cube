@@ -49,10 +49,10 @@ const cube = new RubiksCube({...})
 cube.cuberefreshCube() : refresh cube (block + sticker)
 cube.refreshStickers() : refresh sticker
 cube.refreshBlockColor() : refresh block
-cube.toggleMirror() : on/off mirror sticker
+cube.refreshMirrorSticker() : refresh mirror sticker
 cube.children : blocks array
-cube.animate("RURU") : animation "RURU" operation every 1000ms(cube.options.animationDuration)
-cubme.immediateOperate("RURU") : apply operation RURU without animation
+cube.operateWidthAnimation("RURU") : animation "RURU" operation every 1000ms(cube.options.animationDuration)
+cube.operate("RURU") : apply operation RURU without animation
 ```
    
 > ## usage
@@ -79,14 +79,23 @@ cube = new RubiksCube(
         animateDuration : 1000 // animation time
     });
 
-    //change block color
-    cube.option.blockColor = "~~"
-    cube.refreshBlockColor();
+//change block color
+cube.option.blockColor = "~~"
+cube.refreshBlockColor();
 
-    //refresh sticker
-    cube.option.stickerColorSet["f] = "~~"
-    cube.refreshSticker();
+//refresh sticker
+cube.option.stickerColorSet["f] = "~~"
+cube.refreshSticker();
 
-    //refresh cube
-    cube.cuberefreshCube()
+//refresh cube
+cube.cuberefreshCube();
+
+//apply operation with animation
+cube.operateWidthAnimation("RURU");
+
+//apply operation without animation
+cube.operate("RURU");
+
+//toggle mirror sticker
+cube.refreshMirrorSticker();
 ```

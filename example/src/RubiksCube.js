@@ -10804,7 +10804,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
   };
 };
 
-Cube333.prototype.animate = function animate(operations) {
+Cube333.prototype.operateWidthAnimation = function operateWidthAnimation(operations) {
   this._operationsArray = this._parseOperations(operations);
   this.dispatchEvent({
     type: 'operation',
@@ -10848,7 +10848,7 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks() {
   });
 };
 
-Cube333.prototype.toggleMirror = function toggleMirror() {
+Cube333.prototype.refreshMirrorSticker = function refreshMirrorSticker() {
   var _this3 = this;
 
   var faces = ["f", "b", "u", "d", "l", "r"];
@@ -10960,7 +10960,7 @@ Cube333.prototype.refreshBlockColor = function refreshBlockColor() {
   });
 };
 
-Cube333.prototype.immediateOperate = function immediateOperate(operations) {
+Cube333.prototype.operate = function operate(operations) {
   var _this9 = this;
 
   this._operationsArray = this._parseOperations(operations);
