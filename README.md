@@ -2,10 +2,16 @@
 > ## a extension THREE.CSS3DObject for making rubik's cube(only 333)
 
 ![grab-landing-page](https://github.com/lab89/three-rubiks-cube/blob/master/images/main.gif?raw=true)
+> ## dependencies
+```
+ three
+```
 > ## install
 ```
+npm i three
 npm i three-rubiks-cube
 ```
+
 > ## execute example
 ```
 clone repository
@@ -15,10 +21,8 @@ npm run start
 done!
 ```
 
-
 > ## properties
 ```
-import RubiksCube from 'three-rubiks-cube'
 const cube = new RubiksCube({...})
 console.log(cube.options)
 ===================================================================
@@ -59,8 +63,10 @@ cube.operate("RURU") : apply operation RURU without animation
 
 ```
    
-> ## usage
+> ## usage(must be check example!)
 ```
+import * as THREE from 'three';
+import {CSS3DRenderer, CSS3DObject} from 'three/examples/jsm/renderers/CSS3DRenderer'
 import RubiksCube from 'three-rubiks-cube'
 cube = new RubiksCube(
     {
@@ -83,11 +89,12 @@ cube = new RubiksCube(
         animateDuration : 1000 // animation time
     });
 
-// after all animation completed (only call operateWidthAnimation)
+// after all animation completed (only operateWidthAnimation function dispatch operationComplete event)
 cube.addEventListener("operationCompleted", function(){				
     console.log("operationCompleted!")
     cube.refreshCube();
 })
+
 //change block color
 cube.option.blockColor = "~~"
 cube.refreshBlockColor();
