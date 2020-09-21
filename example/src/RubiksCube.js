@@ -10348,32 +10348,39 @@ var Cube333 = function Cube333(options) {
   this._operationsArray = [];
   this.addEventListener("operation", function (event) {
     //그룹 없애기		
-    console.log("aa");
-
     if (this.animationEnabled) {
       var inOutQuad = function inOutQuad(n) {
         n *= 2;
         if (n < 1) return 0.5 * n * n;
-        return -0.5 * (--n * (n - 2) - 1);
+        var v = -0.5 * (--n * (n - 2) - 1);
+        if (v > 0.999) return 1;else return v;
       };
 
       var animation = function animation(timestamp) {
         if (!start) start = timestamp;
         var progress = timestamp - start;
 
-        if (progress <= this.options.animateDuration) {
-          tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);
-          window.requestAnimationFrame(animation.bind(this));
-        } else {
-          this._operator(this._operationsArray[event.index], tempOperationGroup);
+        if (progress < this.options.animateDuration && progress > 0) {
+          var quad = inOutQuad(progress / 1000);
 
-          this.animationEnabled = true;
-          this.dispatchEvent({
-            type: "operation",
-            index: event.index + 1
-          });
-          return;
+          if (quad <= 1) {
+            tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);
+
+            if (quad === 1) {
+              this.animationEnabled = true;
+
+              this._operator(this._operationsArray[event.index], tempOperationGroup);
+
+              this.dispatchEvent({
+                type: "operation",
+                index: event.index + 1
+              });
+              return;
+            }
+          }
         }
+
+        window.requestAnimationFrame(animation.bind(this));
       };
 
       this.animationEnabled = false;
@@ -10386,7 +10393,9 @@ var Cube333 = function Cube333(options) {
           }
         }
 
-        this.parent.remove(tempOperationGroup);
+        tempOperationGroup.rotation.x = 0;
+        tempOperationGroup.rotation.y = 0;
+        tempOperationGroup.rotation.z = 0; // this.parent.remove(tempOperationGroup);				
       }
 
       if (event.index > this._operationsArray.length - 1) {
@@ -10402,7 +10411,7 @@ var Cube333 = function Cube333(options) {
 
       tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
       var start = null;
-      window.requestAnimationFrame(animation.bind(this));
+      animation.call(this);
     }
   }.bind(this));
 };
@@ -10449,6 +10458,7 @@ Cube333.prototype._createBlock = function _createBlock(options, orientation) {
   var front = faceElement.cloneNode(true);
   front.className = "f";
   front.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth / 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 0deg)";
+  front.style.backfaceVisibility = "hidden";
   blockElement.appendChild(front);
   var back = faceElement.cloneNode(true);
   back.className = "b";
@@ -10457,24 +10467,21 @@ Cube333.prototype._createBlock = function _createBlock(options, orientation) {
 
   var xplane = faceElement.cloneNode(true);
   xplane.className = "z";
-  xplane.style.borderRadius = "0px";
-  xplane.style.width = options.size.width * 0.98 + "px";
-  xplane.style.height = options.size.height * 0.98 + "px";
-  xplane.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(1, 0, 0, -90deg) ";
+  xplane.style.width = options.size.width * 0.94 + "px";
+  xplane.style.height = options.size.height * 0.94 + "px";
+  xplane.style.transform = "translateX(" + -options.size.width * 0.94 / 2 + "px)" + "translateY(" + -options.size.height * 0.94 / 2 + "px)" + "rotate3d(1, 0, 0, -90deg) ";
   blockElement.appendChild(xplane);
   var yplane = faceElement.cloneNode(true);
   yplane.className = "y";
-  yplane.style.borderRadius = "0px";
-  yplane.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)";
-  yplane.style.width = options.size.width + "px";
-  yplane.style.height = options.size.height * 0.98 + "px";
+  yplane.style.transform = "translateX(" + -options.size.width * 0.94 / 2 + "px)" + "translateY(" + -options.size.height * 0.94 / 2 + "px)";
+  yplane.style.width = options.size.width * 0.94 + "px";
+  yplane.style.height = options.size.height * 0.94 + "px";
   blockElement.appendChild(yplane);
   var zplane = faceElement.cloneNode(true);
   zplane.className = "x";
-  zplane.style.borderRadius = "0px";
-  zplane.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 90deg) ";
-  zplane.style.width = options.size.width * 0.98 + "px";
-  zplane.style.height = options.size.height * 0.98 + "px";
+  zplane.style.transform = "translateX(" + -options.size.width * 0.94 / 2 + "px)" + "translateY(" + -options.size.height * 0.94 / 2 + "px)" + "rotate3d(0, 1, 0, 90deg) ";
+  zplane.style.width = options.size.width * 0.94 + "px";
+  zplane.style.height = options.size.height * 0.94 + "px";
   blockElement.appendChild(zplane);
   var m_top = faceElement.cloneNode(true);
   m_top.style.backgroundColor = '';
@@ -10549,7 +10556,8 @@ Cube333.prototype._operator = function _operator(operation, operationGroup) {
     "f": ["l", "u", "r", "d"],
     "z": ["l", "u", "r", "d"],
     "M": ["u", "f", "d", "b"],
-    "B": ["d", "r", "u", "l"]
+    "B": ["d", "r", "u", "l"],
+    "b": ["d", "r", "u", "l"]
   };
   var oprs = operations[operation.replace('2', "").replace("'", "")];
   var isDouble = operation.includes("2") ? 2 : 1;
@@ -10586,153 +10594,218 @@ Cube333.prototype._parseOperations = function _parseOperations(operations) {
 };
 
 Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operationString) {
-  var tempOperationGroup = new three__WEBPACK_IMPORTED_MODULE_0__["Group"]();
-  tempOperationGroup.name = "tempOperationGroup";
-  this.parent.add(tempOperationGroup);
+  var tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+
+  if (!tempOperationGroup) {
+    tempOperationGroup = new three__WEBPACK_IMPORTED_MODULE_0__["Group"]();
+    tempOperationGroup.name = "tempOperationGroup";
+  } // const tempOperationGroup = new THREE.Group();
+  // tempOperationGroup.name = "tempOperationGroup";
+
+
   var axis;
   var angle = 90;
+  var targetChildren = null;
 
   if (operationString.includes("R")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return Array.from(child.name).includes("r");
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
     });
+
+    while (targetChildren.length) {
+      tempOperationGroup.add(targetChildren.shift());
+    } // .forEach((child)=> {tempOperationGroup.attach(child)});
+
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](1, 0, 0);
     angle = -90;
   } else if (operationString.includes("r")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return !Array.from(child.name).includes("l");
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
     });
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    } // .forEach((child)=>{tempOperationGroup.attach(child)});
+
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](1, 0, 0);
     angle = -90;
   } else if (operationString.includes("L")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return Array.from(child.name).includes("l");
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
     });
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    } // .forEach((child)=>{tempOperationGroup.attach(child)});
+
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-1, 0, 0);
     angle = -90;
   } else if (operationString.includes("l")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return !Array.from(child.name).includes("r");
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
     });
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    } // .forEach((child)=>{tempOperationGroup.attach(child)});
+
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-1, 0, 0);
     angle = -90;
   } else if (operationString.includes("F")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return Array.from(child.name).includes("f");
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
     });
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    } // .forEach((child)=>{tempOperationGroup.attach(child)});
+
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, -1);
     angle = 90;
   } else if (operationString.includes("f")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return !Array.from(child.name).includes("b");
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
     });
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    } // .forEach((child)=>{tempOperationGroup.attach(child)});
+
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, -1);
     angle = 90;
   } else if (operationString.includes("B")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return Array.from(child.name).includes("b");
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
     });
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    } // .forEach((child)=>{tempOperationGroup.attach(child)});
+
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 1);
     angle = 90;
   } else if (operationString.includes("b")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return !Array.from(child.name).includes("f");
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
     });
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    } // .forEach((child)=>{tempOperationGroup.attach(child)});
+
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 1);
     angle = 90;
   } else if (operationString.includes("U")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return Array.from(child.name).includes("u");
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
     });
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    } // .forEach((child)=>{tempOperationGroup.attach(child)});
+
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0);
     angle = -90;
   } else if (operationString.includes("u")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return !Array.from(child.name).includes("d");
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
     });
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    } // .forEach((child)=>{tempOperationGroup.attach(child)});		
+
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0);
     angle = -90;
   } else if (operationString.includes("D")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return Array.from(child.name).includes("d");
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
     });
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    } // .forEach((child)=>{tempOperationGroup.attach(child)});
+
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, -1, 0);
     angle = -90;
   } else if (operationString.includes("d")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return !Array.from(child.name).includes("u");
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
     });
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    } // .forEach((child)=>{tempOperationGroup.attach(child)});
+
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, -1, 0);
     angle = -90;
   } else if (operationString.includes("M")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return (child.name.match(/x/g) || []).length === 1 && (child.name.match(/f|u|b|d/g) || []).length === 2 || (child.name.match(/x/g) || []).length === 2 && /f|u|b|d/.test(child.name);
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
     });
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    } // .forEach((child)=>{tempOperationGroup.attach(child)});
+
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](1, 0, 0);
     angle = 90;
   } else if (operationString.includes("E")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return (child.name.match(/x/g) || []).length === 1 && (child.name.match(/r|b|l|f/g) || []).length === 2 || (child.name.match(/x/g) || []).length === 2 && /r|b|l|f/.test(child.name);
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
-    });
+    }); // .forEach((child)=>{tempOperationGroup.attach(child)});
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    }
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0);
     angle = 90;
   } else if (operationString.includes("S")) {
-    this.children.filter(function (child) {
+    targetChildren = this.children.filter(function (child) {
       return (child.name.match(/x/g) || []).length === 1 && (child.name.match(/r|u|l|d/g) || []).length === 2 || (child.name.match(/x/g) || []).length === 2 && /r|u|l|d/.test(child.name);
-    }).forEach(function (child) {
-      tempOperationGroup.add(child);
-    });
+    }); // .forEach((child)=>{tempOperationGroup.attach(child)});
+
+    while (targetChildren.length) {
+      tempOperationGroup.attach(targetChildren.shift());
+    }
+
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 1);
     angle = 90;
   } else if (operationString.includes("x")) {
     while (this.children.length) {
-      tempOperationGroup.add(this.children.shift());
+      tempOperationGroup.attach(this.children.shift());
     }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](1, 0, 0);
     angle = -90;
   } else if (operationString.includes("y")) {
     while (this.children.length) {
-      tempOperationGroup.add(this.children.shift());
+      tempOperationGroup.attach(this.children.shift());
     }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0);
-    angle = 90;
+    angle = -90;
   } else if (operationString.includes("z")) {
     while (this.children.length) {
-      tempOperationGroup.add(this.children.shift());
+      tempOperationGroup.attach(this.children.shift());
     }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 1);
-    angle = 90;
+    angle = -90;
   }
 
   if (operationString.includes("'")) {
@@ -10743,6 +10816,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
     angle = angle * 2;
   }
 
+  this.parent.add(tempOperationGroup);
   return {
     angle: angle,
     axis: axis
@@ -10986,9 +11060,9 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
   var sticker_coords = stickerCoord.split(""); //sticker coord -> must transform! by faceRotate function
 
   var style = {
-    width: this.options.fitment === "fully_fitted" ? "97%" : "90%",
-    height: this.options.fitment === "fully_fitted" ? "97%" : "90%",
-    margin: this.options.fitment === "fully_fitted" ? "5px" : "8px",
+    width: this.options.fitment === "fully_fitted" ? "97%" : "92%",
+    height: this.options.fitment === "fully_fitted" ? "97%" : "92%",
+    margin: this.options.fitment === "fully_fitted" ? "5px" : this.options.width * 0.3 + "px",
     borderRadius: "30px"
   };
   var element = block.element;
@@ -11019,9 +11093,15 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
         mirrorFace[0].appendChild(mirrorSticker);
       }
     }
+  }); // re set zIndex empty face
+
+  Array.from(element.children).filter(function (el) {
+    return !el.className.includes('z') && !el.className.includes('y') && !el.className.includes('x') && !el.className.includes('m') && !el.children.length;
+  }).forEach(function (el) {
+    return el.style.zIndex = -3;
   }); // remove empty mirror
 
-  var emptyMirror = Array.from(element.children).filter(function (el) {
+  Array.from(element.children).filter(function (el) {
     return el.className.includes('m') && el.children.length === 0;
   }).forEach(function (el) {
     return el.remove();

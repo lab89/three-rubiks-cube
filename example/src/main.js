@@ -3,7 +3,7 @@ import {CSS3DRenderer, CSS3DObject} from 'three/examples/jsm/renderers/CSS3DRend
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import RubiksCube from './RubiksCube'
 
-var camera, scene, renderer, controls;
+var camera, scene, renderer, controls, cube;
 
 init();
 animate();
@@ -18,17 +18,15 @@ function init(){
 	
 	renderer = new CSS3DRenderer();
 	renderer.setSize(window.innerWidth, window.innerHeight);
-	document.getElementById("container").appendChild(renderer.domElement);
+	document.getElementById("container").appendChild(renderer.domElement);	
 	
-	// const test= new CSS3DObject(document.createElement("div"));
-	
-	const cube = new RubiksCube(
+	cube = new RubiksCube(
 		{
 			blockColor : "black",
 			size : {
-				width : 300,
-				height : 300,
-				depth : 300
+				width : 100,
+				height : 100,
+				depth : 100
 			},
 			stickerColorSet : {
 				"f": "rgba(42, 249, 107, 1)",
@@ -43,52 +41,38 @@ function init(){
 			hoverEnabled : true,
 			clickEnabled : true,
 			hoverColor : "red",
-			clickColor : "black",
+			clickColor : "cyan",
 			animateDuration : 1000
 		});
 	
 	scene.add(cube);	
 	cube.addEventListener("operationCompleted", function(){				
-		console.log("??")
-		// cube.refreshCube();
-	});
-	cube.refreshCube();
-	cube.immediateOperate("RURU");
-	cube.refreshCube();
-	cube.animate("RUF")
-	
+		console.log("operationCompleted!")
+		console.log(cube);
+	});		
+	cube.immediateOperate('xyz')
+	cube.animate("FBUDRLSEMxyzz'y'x'M'E'S'L'R'D'U'B'F'fbudrll'r'd'u'b'f'")
+	// cube.animate("xyzz'y'x'")
 
-	// setTimeout(function(){
-	// 	// cube.options.stickerColorSet["f"] = "black";
-	// 	// cube.options.blockColor = "white";
-	// 	cube.refreshCube();
-	// 	cube.toggleMirror();
-	// 	console.log(cube);
-	// }, 5000)
-	
+	// cube.animate("yF")
+
 	controls = new OrbitControls(camera, renderer.domElement);
 	controls.enableZoom = true;
 	controls.enablePan = false;
 	controls.minDistance = 500;
 	controls.maxDistance = 10000;
-	controls.addEventListener("change", function (e) {
-		console.log("change");
-	});
-	
 }
 
 function onWindowResize() {
 	camera.aspect = window.innerWidth / window.innerHeight;
-	camera.updateProjectionMatrix();
-	
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	
-	render();
+	camera.updateProjectionMatrix();	
+	renderer.setSize(window.innerWidth, window.innerHeight);	
 }
 
 function animate(time) {
 	requestAnimationFrame(animate);
-	controls.update();
+	// controls.update();
+	// cube.update(time);
 	render();
 }
 

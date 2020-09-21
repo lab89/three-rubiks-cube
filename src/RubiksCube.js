@@ -6,8 +6,6 @@ const NNNCube = function NNNCube(){
 NNNCube.prototype = Object.create(THREE.Group.prototype);
 NNNCube.prototype.constructor = NNNCube;
 
-
-
 const Cube333 = function Cube333(options){
 	NNNCube.apply(this);
 	console.log("**********************************")
@@ -57,7 +55,6 @@ const Cube333 = function Cube333(options){
 	this._operationsArray = [];
 	this.addEventListener("operation", function(event){
 		//그룹 없애기		
-		console.log("aa");
 		if(this.animationEnabled){
 			this.animationEnabled = false;
 			let tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
@@ -67,7 +64,10 @@ const Cube333 = function Cube333(options){
 						this.attach(tempOperationGroup.children.shift())
 					}
 				}
-				this.parent.remove(tempOperationGroup);
+				tempOperationGroup.rotation.x = 0;
+				tempOperationGroup.rotation.y = 0;
+				tempOperationGroup.rotation.z = 0;
+				// this.parent.remove(tempOperationGroup);				
 			}
 			if(event.index > this._operationsArray.length - 1) {
 				this._operationsArray = [];
@@ -81,23 +81,30 @@ const Cube333 = function Cube333(options){
 			function inOutQuad(n){
 				n *= 2;
 				if (n < 1) return 0.5 * n * n;
-				return - 0.5 * (--n * (n - 2) - 1);
+				const v = - 0.5 * (--n * (n - 2) - 1);
+				if(v > 0.999) return 1
+				else return v;							
 			}
 			let start = null;
 			function animation(timestamp){
 				if (!start) start = timestamp;
 				const progress = timestamp - start;
-				if (progress <= this.options.animateDuration) {
-					tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);
-					window.requestAnimationFrame(animation.bind(this));
-				}else{
-					this._operator(this._operationsArray[event.index], tempOperationGroup);				
-					this.animationEnabled = true;
-					this.dispatchEvent({type : "operation", index : event.index + 1});
-					return;
-				}
+				if (progress < this.options.animateDuration && progress > 0) {	
+					const quad = inOutQuad(progress / 1000);
+					if(quad <= 1){
+						tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);													
+						if(quad === 1){							
+							this.animationEnabled = true;
+							
+							this._operator(this._operationsArray[event.index], tempOperationGroup);										
+							this.dispatchEvent({type : "operation", index : event.index + 1});
+							return;
+						}
+					}					
+				}				
+				window.requestAnimationFrame(animation.bind(this));
 			}
-			window.requestAnimationFrame(animation.bind(this));
+			animation.call(this);
 		}
 		
 	}.bind(this))
@@ -126,7 +133,7 @@ Cube333.prototype._createBlock = function _createBlock(options, orientation){
 	/** top - down face **/
 	const top = faceElement.cloneNode(true);
 	top.className = "u";
-	top.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height) + "px)" + "rotate3d(1, 0, 0, -90deg) ";
+	top.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height) + "px)" + "rotate3d(1, 0, 0, -90deg) ";	
 	blockElement.appendChild(top);	
 
 	const down = faceElement.cloneNode(true);
@@ -137,7 +144,7 @@ Cube333.prototype._createBlock = function _createBlock(options, orientation){
 	/** left - right face **/
 	const left = faceElement.cloneNode(true);
 	left.className = "l";
-	left.style.transform = "translateX(" +  (options.size.width * -1) + "px)"+ "translateY(" + (-options.size.height/ 2) + "px)" + "rotate3d(0, 1, 0, 90deg)";
+	left.style.transform = "translateX(" +  (options.size.width * -1) + "px)"+ "translateY(" + (-options.size.height/ 2) + "px)" + "rotate3d(0, 1, 0, 90deg)";	
 	blockElement.appendChild(left);	
 	
 	const right = faceElement.cloneNode(true);
@@ -149,6 +156,8 @@ Cube333.prototype._createBlock = function _createBlock(options, orientation){
 	const front =  faceElement.cloneNode(true);
 	front.className = "f";
 	front.style.transform = "translateX("+ (-options.size.width / 2) + "px)" +"translateZ(" +  (options.size.depth  / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)" + "rotate3d(0, 1, 0, 0deg)";
+	front.style.backfaceVisibility = "hidden";
+
 	blockElement.appendChild(front);
 	
 	const back =  faceElement.cloneNode(true);
@@ -159,26 +168,25 @@ Cube333.prototype._createBlock = function _createBlock(options, orientation){
 	// see through block plane
 	const xplane =  faceElement.cloneNode(true);
 	xplane.className = "z";
-	xplane.style.borderRadius = "0px";
-	xplane.style.width = options.size.width * 0.98 + "px";
-	xplane.style.height = options.size.height * 0.98 + "px";
-	xplane.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)" + "rotate3d(1, 0, 0, -90deg) ";
+	xplane.style.width = options.size.width * 0.94 + "px";
+	xplane.style.height = options.size.height * 0.94 + "px";
+	xplane.style.transform = "translateX("+ (-options.size.width* 0.94 / 2) + "px)" + "translateY(" + (-options.size.height* 0.94 / 2) + "px)" + "rotate3d(1, 0, 0, -90deg) ";
+	
 	blockElement.appendChild(xplane);
 
 	const yplane =  faceElement.cloneNode(true);
 	yplane.className = "y";
-	yplane.style.borderRadius = "0px";
-	yplane.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)";
-	yplane.style.width = options.size.width  + "px";
-	yplane.style.height = options.size.height * 0.98 + "px";
+	yplane.style.transform = "translateX("+ (-options.size.width* 0.94 / 2) + "px)" + "translateY(" + (-options.size.height* 0.94 / 2) + "px)";
+	yplane.style.width = options.size.width * 0.94 + "px";
+	yplane.style.height = options.size.height * 0.94 + "px";
+	
 	blockElement.appendChild(yplane);
 
 	const zplane =  faceElement.cloneNode(true);
 	zplane.className = "x";
-	zplane.style.borderRadius = "0px";
-	zplane.style.transform = "translateX("+ (-options.size.width / 2) + "px)" + "translateY(" + (-options.size.height / 2) + "px)" + "rotate3d(0, 1, 0, 90deg) ";
-	zplane.style.width = options.size.width * 0.98 + "px";
-	zplane.style.height = options.size.height * 0.98 + "px";
+	zplane.style.transform = "translateX("+ (-options.size.width * 0.94/ 2) + "px)" + "translateY(" + (-options.size.height* 0.94 / 2) + "px)" + "rotate3d(0, 1, 0, 90deg) ";
+	zplane.style.width = options.size.width * 0.94 + "px";
+	zplane.style.height = options.size.height * 0.94 + "px";
 	blockElement.appendChild(zplane);
 
 	const m_top = faceElement.cloneNode(true);
@@ -261,25 +269,26 @@ Cube333.prototype._operator = function _operator(operation, operationGroup){
 		"f" : ["l", "u", "r", "d"],
 		"z" : ["l", "u", "r", "d"],
 		"M" : ["u", "f", "d", "b"],
-		"B" : ["d", "r", "u", "l"]
+		"B" : ["d", "r", "u", "l"],
+		"b" : ["d", "r", "u", "l"]
 	};
-	
 	const oprs = operations[operation.replace('2', "").replace("'", "")];
 	const isDouble = operation.includes("2") ? 2 : 1;
 	const isAntiCock = operation.includes("'") ? -1 : 1;
+	
 	operationGroup.children.forEach((block)=>{
 		let name = "";		
 		Array.from(block.name).forEach((string, i)=>{
 			const index = oprs.indexOf(string);
-			if(index > -1){
+			if(index > -1){				
 				const newIndex = (index + (isDouble * isAntiCock));
 				const finalIndex = newIndex % oprs.length;
-				name += finalIndex >= 0 ? oprs[finalIndex] : oprs[oprs.length  + finalIndex]
+				name += finalIndex >= 0 ? oprs[finalIndex] : oprs[oprs.length  + finalIndex];
 			}else{
 				name += string
 			}
-		});
-		block.name = name;
+		});		
+		block.name = name;	
 	})
 };
 Cube333.prototype._parseOperations = function _parseOperations(operations){
@@ -296,132 +305,181 @@ Cube333.prototype._parseOperations = function _parseOperations(operations){
 	return parse(operations);
 };
 Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operationString){
-	
-	const tempOperationGroup = new THREE.Group();
-	tempOperationGroup.name = "tempOperationGroup";
-	this.parent.add(tempOperationGroup);
+	let tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+	if(!tempOperationGroup){
+		tempOperationGroup = new THREE.Group();
+		tempOperationGroup.name = "tempOperationGroup";
+	}
+	// const tempOperationGroup = new THREE.Group();
+	// tempOperationGroup.name = "tempOperationGroup";
 
 	let axis;
 	let angle = 90;
+	let targetChildren = null;
 	if(operationString.includes("R")){
-		this.children
+		targetChildren = this.children
 		.filter((child) => { return Array.from(child.name).includes("r")})
-		.forEach((child)=> {tempOperationGroup.add(child)});
+		while(targetChildren.length){
+			tempOperationGroup.add(targetChildren.shift())
+		}
+		// .forEach((child)=> {tempOperationGroup.attach(child)});
 		axis = new THREE.Vector3(1, 0, 0);
 		angle = -90;
 	}else if(operationString.includes("r")){
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{ return !Array.from(child.name).includes("l")})
-		.forEach((child)=>{tempOperationGroup.add(child)});
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
+		// .forEach((child)=>{tempOperationGroup.attach(child)});
 		axis = new THREE.Vector3(1, 0, 0);
 		angle = -90;
 	}else if(operationString.includes("L")){
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{ return Array.from(child.name).includes("l");})
-		.forEach((child)=>{tempOperationGroup.add(child)});
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
+		// .forEach((child)=>{tempOperationGroup.attach(child)});
 		axis = new THREE.Vector3(-1, 0, 0);
 		angle = -90;
 	}else if(operationString.includes("l")){
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{ return !Array.from(child.name).includes("r");})
-		.forEach((child)=>{tempOperationGroup.add(child)});
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
+		// .forEach((child)=>{tempOperationGroup.attach(child)});
 		axis = new THREE.Vector3(-1, 0, 0);
 		angle = -90;
 	}else if(operationString.includes("F")){
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{ return Array.from(child.name).includes("f");})
-		.forEach((child)=>{tempOperationGroup.add(child)});
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
+		// .forEach((child)=>{tempOperationGroup.attach(child)});
 		axis = new THREE.Vector3(0, 0, -1);
 		angle = 90;
 	}else if(operationString.includes("f")){
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{ return !Array.from(child.name).includes("b");})
-		.forEach((child)=>{tempOperationGroup.add(child)});
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
+		// .forEach((child)=>{tempOperationGroup.attach(child)});
 		axis = new THREE.Vector3(0, 0, -1);
 		angle = 90;
 	}else if(operationString.includes("B")){
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{ return Array.from(child.name).includes("b");})
-		.forEach((child)=>{tempOperationGroup.add(child)});
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
+		// .forEach((child)=>{tempOperationGroup.attach(child)});
 		axis = new THREE.Vector3(0, 0, 1);
 		angle = 90;
 	}else if(operationString.includes("b")){
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{ return !Array.from(child.name).includes("f");})
-		.forEach((child)=>{tempOperationGroup.add(child)});
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
+		// .forEach((child)=>{tempOperationGroup.attach(child)});
 		axis = new THREE.Vector3(0, 0, 1);
 		angle = 90;
 	}else if(operationString.includes("U")){
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{ return Array.from(child.name).includes("u")})
-		.forEach((child)=>{tempOperationGroup.add(child)});
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
+		// .forEach((child)=>{tempOperationGroup.attach(child)});
 		axis = new THREE.Vector3(0, 1, 0);
 		angle = -90;
 	}else if(operationString.includes("u")){
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{ return !Array.from(child.name).includes("d")})
-		.forEach((child)=>{tempOperationGroup.add(child)});		
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
+		// .forEach((child)=>{tempOperationGroup.attach(child)});		
 		axis = new THREE.Vector3(0, 1, 0);
 		angle = -90;
 	}else if(operationString.includes("D")){
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{ return Array.from(child.name).includes("d");})
-		.forEach((child)=>{tempOperationGroup.add(child)});
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
+		// .forEach((child)=>{tempOperationGroup.attach(child)});
 		axis = new THREE.Vector3(0, -1, 0);
 		angle = -90;
 	}else if(operationString.includes("d")){
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{ return !Array.from(child.name).includes("u");})
-		.forEach((child)=>{tempOperationGroup.add(child)});
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
+		// .forEach((child)=>{tempOperationGroup.attach(child)});
 		axis = new THREE.Vector3(0, -1, 0);
 		angle = -90;
 	}else if(operationString.includes("M")){
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{
-			return (child.name.match(/x/g) || []).length === 1
-			&& (child.name.match(/f|u|b|d/g) || []).length === 2				
+			return ((child.name.match(/x/g) || []).length === 1
+			&& (child.name.match(/f|u|b|d/g) || []).length === 2)				
 			|| ((child.name.match(/x/g) || []).length === 2 && (/f|u|b|d/.test(child.name)))})
-		.forEach((child)=>{tempOperationGroup.add(child)});
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
+		// .forEach((child)=>{tempOperationGroup.attach(child)});
 		axis = new THREE.Vector3(1, 0, 0);
 		angle = 90;
 	}else if(operationString.includes("E")){		
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{
-			return (child.name.match(/x/g) || []).length === 1
-			&& (child.name.match(/r|b|l|f/g) || []).length === 2		
+			return ((child.name.match(/x/g) || []).length === 1
+			&& (child.name.match(/r|b|l|f/g) || []).length === 2)	
 			|| ((child.name.match(/x/g) || []).length === 2 && (/r|b|l|f/.test(child.name)))})
-			.forEach((child)=>{tempOperationGroup.add(child)});
+			// .forEach((child)=>{tempOperationGroup.attach(child)});
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
 		axis = new THREE.Vector3(0, 1, 0);
 		angle = 90;
 	}else if(operationString.includes("S")){		
-		this.children
+		targetChildren = this.children
 		.filter((child)=>{
-			return (child.name.match(/x/g) || []).length === 1
-			&& (child.name.match(/r|u|l|d/g) || []).length === 2			
+			return ((child.name.match(/x/g) || []).length === 1
+			&& (child.name.match(/r|u|l|d/g) || []).length === 2)			
 			|| ((child.name.match(/x/g) || []).length === 2 && (/r|u|l|d/.test(child.name)))})
 
-		.forEach((child)=>{tempOperationGroup.add(child)});
+		// .forEach((child)=>{tempOperationGroup.attach(child)});
+		while(targetChildren.length){
+			tempOperationGroup.attach(targetChildren.shift())
+		}
 		axis = new THREE.Vector3(0, 0, 1);
 		angle = 90;
 	}else if(operationString.includes("x")){	
 		while(this.children.length){
-			tempOperationGroup.add(this.children.shift())
+			tempOperationGroup.attach(this.children.shift())
 		}			
 		axis = new THREE.Vector3(1, 0, 0);
 		angle = -90;
 	}
 	else if(operationString.includes("y")){
 		while(this.children.length){
-			tempOperationGroup.add(this.children.shift())
+			tempOperationGroup.attach(this.children.shift())
 		}	
 		axis = new THREE.Vector3(0, 1, 0);
-		angle = 90;
+		angle = -90;
 	}else if(operationString.includes("z")){
 		while(this.children.length){
-			tempOperationGroup.add(this.children.shift())
+			tempOperationGroup.attach(this.children.shift())
 		}	
 		axis = new THREE.Vector3(0, 0, 1);
-		angle = 90;
+		angle = -90;
 	}
 
 	if(operationString.includes("'")){
@@ -430,6 +488,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 	if(operationString.includes("2")){
 		angle = angle * 2;
 	}
+	this.parent.add(tempOperationGroup);	
 	
 	return {
 		angle : angle,
@@ -612,6 +671,7 @@ const RubiksCube = function(options){
 			this._attachSticker(coord, arr[0], i);
 		})
 	})
+	
 };
 
 RubiksCube.prototype = Object.create(Cube333.prototype);
@@ -630,9 +690,9 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
 	const blockCoord = block.name.split("");
 	const sticker_coords = stickerCoord.split(""); //sticker coord -> must transform! by faceRotate function
 	const style = {
-		width : this.options.fitment === "fully_fitted" ? "97%" : "90%",
-		height : this.options.fitment === "fully_fitted" ? "97%" : "90%",
-		margin : this.options.fitment === "fully_fitted" ? "5px" : "8px",
+		width : this.options.fitment === "fully_fitted" ? "97%" : "92%",
+		height : this.options.fitment === "fully_fitted" ? "97%" : "92%",
+		margin : this.options.fitment === "fully_fitted" ? "5px" : this.options.width * 0.3 + "px",
 		borderRadius : "30px"
 	};
 	const element = block.element;
@@ -662,9 +722,13 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
 			}
 		}
 	})
+	// re set zIndex empty face
+	Array.from(element.children)
+	.filter((el)=> !el.className.includes('z') &&!el.className.includes('y') &&!el.className.includes('x') &&!el.className.includes('m') && !el.children.length)
+	.forEach((el)=> el.style.zIndex = -3)	
 
 	// remove empty mirror
-	const emptyMirror = Array.from(element.children)
+	Array.from(element.children)
 		.filter((el)=> el.className.includes('m') && el.children.length === 0)
 		.forEach((el)=> el.remove());
 };
