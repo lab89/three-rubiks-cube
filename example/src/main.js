@@ -23,11 +23,7 @@ function init(){
 	cube = new RubiksCube(
 		{
 			blockColor : "black",
-			size : {
-				width : 100,
-				height : 100,
-				depth : 100
-			},
+			size : 200,
 			stickerColorSet : {
 				"f": "rgba(42, 249, 107, 1)",
 				"b": "rgba(5, 34, 174, 1)",
@@ -48,14 +44,11 @@ function init(){
 	scene.add(cube);	
 	cube.addEventListener("operationCompleted", function(){				
 		console.log("operationCompleted!")
-		console.log(cube);
+		cube.refreshCube();
 	});		
 	cube.immediateOperate('xyz')
-	cube.animate("FBUDRLSEMxyzz'y'x'M'E'S'L'R'D'U'B'F'fbudrll'r'd'u'b'f'")
-	// cube.animate("xyzz'y'x'")
-
-	// cube.animate("yF")
-
+	cube.animate("FBUDRLSEMxyzz'y'x'M'E'S'L'R'D'U'B'F'fbudrll'r'd'u'b'f'")	
+	
 	controls = new OrbitControls(camera, renderer.domElement);
 	controls.enableZoom = true;
 	controls.enablePan = false;
@@ -71,8 +64,6 @@ function onWindowResize() {
 
 function animate(time) {
 	requestAnimationFrame(animate);
-	// controls.update();
-	// cube.update(time);
 	render();
 }
 

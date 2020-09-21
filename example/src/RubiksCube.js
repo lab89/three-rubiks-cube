@@ -10308,6 +10308,8 @@ var Cube333 = function Cube333(options) {
   NNNCube.apply(this);
   console.log("**********************************");
   console.log("%c THREE JS RUBIKS CUBE!", 'background: #222; color: #bada55');
+  console.log("%c ENJOY RUBIKS CUBE!", 'background: #222; color: #bada55');
+  console.log("%c MADE BY HONG", 'background: #222; color: cyan');
   console.log("**********************************");
   this.animationEnabled = true;
   this.options = options;
@@ -10327,7 +10329,7 @@ var Cube333 = function Cube333(options) {
       var coords = coordString.split("");
       var coordVector = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](_this._coordInfo[coords[0]], _this._coordInfo[coords[1]], _this._coordInfo[coords[2]]);
 
-      var block = _this._createBlock(_this.options, coordVector);
+      var block = _this._createBlock(coordVector);
 
       _this.add(block);
 
@@ -10337,9 +10339,9 @@ var Cube333 = function Cube333(options) {
       };
       block.name = coordString; //init coord String
 
-      block.position.x = coordVector.x * _this.options.size.width;
-      block.position.y = -coordVector.y * _this.options.size.height;
-      block.position.z = coordVector.z * _this.options.size.depth;
+      block.position.x = coordVector.x * _this.options.size;
+      block.position.y = -coordVector.y * _this.options.size;
+      block.position.z = coordVector.z * _this.options.size;
 
       _this._initMouseEventListener(block);
     });
@@ -10419,13 +10421,13 @@ var Cube333 = function Cube333(options) {
 Cube333.prototype = Object.create(NNNCube.prototype);
 Cube333.prototype.constructor = Cube333;
 
-Cube333.prototype._createBlock = function _createBlock(options, orientation) {
+Cube333.prototype._createBlock = function _createBlock(orientation) {
   var commonStyle = {
     position: "absolute",
     backgroundColor: this.options.blockColor,
-    borderRadius: "30px",
-    width: options.size.width + "px",
-    height: options.size.height + "px"
+    borderRadius: this.options.size * 0.1 + "px",
+    width: this.options.size + "px",
+    height: this.options.size + "px"
   };
   var blockElement = document.createElement("div");
   blockElement.style.position = "absolute";
@@ -10437,87 +10439,81 @@ Cube333.prototype._createBlock = function _createBlock(options, orientation) {
 
   var top = faceElement.cloneNode(true);
   top.className = "u";
-  top.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + -options.size.height + "px)" + "rotate3d(1, 0, 0, -90deg) ";
+  top.style.transform = "translateX(" + -this.options.size / 2 + "px)" + "translateY(" + -this.options.size + "px)" + "rotate3d(1, 0, 0, -90deg) ";
   blockElement.appendChild(top);
   var down = faceElement.cloneNode(true);
   down.className = "d";
-  down.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "rotate3d(1, 0, 0, 90deg) ";
+  down.style.transform = "translateX(" + -this.options.size / 2 + "px)" + "rotate3d(1, 0, 0, 90deg) ";
   blockElement.appendChild(down);
   /** left - right face **/
 
   var left = faceElement.cloneNode(true);
   left.className = "l";
-  left.style.transform = "translateX(" + options.size.width * -1 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
+  left.style.transform = "translateX(" + this.options.size * -1 + "px)" + "translateY(" + -this.options.size / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
   blockElement.appendChild(left);
   var right = faceElement.cloneNode(true);
   right.className = "r";
-  right.style.transform = " rotate3d(0, 1, 0, 90deg)" + "translateY(" + -options.size.height / 2 + "px)";
+  right.style.transform = " rotate3d(0, 1, 0, 90deg)" + "translateY(" + -this.options.size / 2 + "px)";
   blockElement.appendChild(right);
   /** front - back face **/
 
   var front = faceElement.cloneNode(true);
   front.className = "f";
-  front.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth / 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 0deg)";
+  front.style.transform = "translateX(" + -this.options.size / 2 + "px)" + "translateZ(" + this.options.size / 2 + "px)" + "translateY(" + -this.options.size / 2 + "px)" + "rotate3d(0, 1, 0, 0deg)";
   front.style.backfaceVisibility = "hidden";
   blockElement.appendChild(front);
   var back = faceElement.cloneNode(true);
   back.className = "b";
-  back.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth * -1 / 2 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, -180deg)";
+  back.style.transform = "translateX(" + -this.options.size / 2 + "px)" + "translateZ(" + this.options.size * -1 / 2 + "px)" + "translateY(" + -this.options.size / 2 + "px)" + "rotate3d(0, 1, 0, -180deg)";
   blockElement.appendChild(back); // see through block plane
 
   var xplane = faceElement.cloneNode(true);
   xplane.className = "z";
-  xplane.style.width = options.size.width * 0.94 + "px";
-  xplane.style.height = options.size.height * 0.94 + "px";
-  xplane.style.transform = "translateX(" + -options.size.width * 0.94 / 2 + "px)" + "translateY(" + -options.size.height * 0.94 / 2 + "px)" + "rotate3d(1, 0, 0, -90deg) ";
+  xplane.style.transform = "translateX(" + -this.options.size / 2 + "px)" + "translateY(" + -this.options.size / 2 + "px)" + "rotate3d(1, 0, 0, -90deg) ";
   blockElement.appendChild(xplane);
   var yplane = faceElement.cloneNode(true);
   yplane.className = "y";
-  yplane.style.transform = "translateX(" + -options.size.width * 0.94 / 2 + "px)" + "translateY(" + -options.size.height * 0.94 / 2 + "px)";
-  yplane.style.width = options.size.width * 0.94 + "px";
-  yplane.style.height = options.size.height * 0.94 + "px";
+  yplane.style.transform = "translateX(" + -this.options.size / 2 + "px)" + "translateY(" + -this.options.size / 2 + "px)";
   blockElement.appendChild(yplane);
   var zplane = faceElement.cloneNode(true);
   zplane.className = "x";
-  zplane.style.transform = "translateX(" + -options.size.width * 0.94 / 2 + "px)" + "translateY(" + -options.size.height * 0.94 / 2 + "px)" + "rotate3d(0, 1, 0, 90deg) ";
-  zplane.style.width = options.size.width * 0.94 + "px";
-  zplane.style.height = options.size.height * 0.94 + "px";
+  zplane.style.transform = "translateX(" + -this.options.size / 2 + "px)" + "translateY(" + -this.options.size / 2 + "px)" + "rotate3d(0, 1, 0, 90deg) ";
   blockElement.appendChild(zplane);
   var m_top = faceElement.cloneNode(true);
   m_top.style.backgroundColor = '';
-  m_top.style.visibility = options.mirror ? 'visible' : 'hidden';
+  m_top.style.visibility = this.options.mirror ? 'visible' : 'hidden';
   m_top.className = "mu";
-  m_top.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + -options.size.height * 4 + "px)" + "rotate3d(1, 0, 0, -90deg) ";
+  m_top.style.transform = "translateX(" + -this.options.size / 2 + "px)" + "translateY(" + -this.options.size * 4 + "px)" + "rotate3d(1, 0, 0, -90deg) ";
   blockElement.appendChild(m_top);
   var m_down = faceElement.cloneNode(true);
   m_down.style.backgroundColor = '';
-  m_down.style.visibility = options.mirror ? 'visible' : 'hidden';
+  m_down.style.visibility = this.options.mirror ? 'visible' : 'hidden';
   m_down.className = "md";
-  m_down.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateY(" + options.size.height * 3 + "px)" + "rotate3d(1, 0, 0, 90deg) ";
+  m_down.style.transform = "translateX(" + -this.options.size / 2 + "px)" + "translateY(" + this.options.size * 3 + "px)" + "rotate3d(1, 0, 0, 90deg) ";
   blockElement.appendChild(m_down);
   var m_left = faceElement.cloneNode(true);
   m_left.style.backgroundColor = '';
-  m_left.style.visibility = options.mirror ? 'visible' : 'hidden';
+  m_left.style.visibility = this.options.mirror ? 'visible' : 'hidden';
   m_left.className = "ml";
-  m_left.style.transform = "translateX(" + options.size.width * -4 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
+  m_left.style.transform = "translateX(" + this.options.size * -4 + "px)" + "translateY(" + -this.options.size / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
   blockElement.appendChild(m_left);
   var m_right = faceElement.cloneNode(true);
   m_right.style.backgroundColor = '';
-  m_right.style.visibility = options.mirror ? 'visible' : 'hidden';
+  m_right.style.visibility = this.options.mirror ? 'visible' : 'hidden';
   m_right.className = "mr";
-  m_right.style.transform = "translateX(" + options.size.width * 4 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
+  m_right.style.transform = "translateX(" + this.options.size * 4 + "px)" + "translateY(" + -this.options.size / 2 + "px)" + "rotate3d(0, 1, 0, 90deg)";
   blockElement.appendChild(m_right);
   var m_front = faceElement.cloneNode(true);
   m_front.className = "mf";
-  m_front.style.visibility = options.mirror ? 'visible' : 'hidden';
+  m_front.style.visibility = this.options.mirror ? 'visible' : 'hidden';
   m_front.style.backgroundColor = '';
-  m_front.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth * 3.5 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, 0deg)";
+  m_front.style.transform = "translateX(" + -this.options.size / 2 + "px)" + "translateZ(" + this.options.size * 3.5 + "px)" + "translateY(" + -this.options.size / 2 + "px)" + "rotate3d(0, 1, 0, 0deg)";
   blockElement.appendChild(m_front);
   var m_back = faceElement.cloneNode(true);
   m_back.className = "mb";
   m_back.style.backgroundColor = '';
-  m_back.style.visibility = options.mirror ? 'visible' : 'hidden';
-  m_back.style.transform = "translateX(" + -options.size.width / 2 + "px)" + "translateZ(" + options.size.depth * -3.5 + "px)" + "translateY(" + -options.size.height / 2 + "px)" + "rotate3d(0, 1, 0, -180deg)";
+  m_back.style.visibility = this.options.mirror ? 'visible' : 'hidden';
+  m_back.style.transform = "translateX(" + -this.options.size / 2 + "px)" + "translateZ(" + this.options.size * -3.5 + "px)" + "translateY(" + -this.options.size / 2 + "px)" + "rotate3d(0, 1, 0, -180deg)";
   blockElement.appendChild(m_back);
   var block = new three_examples_jsm_renderers_CSS3DRenderer__WEBPACK_IMPORTED_MODULE_1__["CSS3DObject"](blockElement);
   block.rotateOnAxis(new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0), this.children.length * 90 * Math.PI / 180);
@@ -10599,9 +10595,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
   if (!tempOperationGroup) {
     tempOperationGroup = new three__WEBPACK_IMPORTED_MODULE_0__["Group"]();
     tempOperationGroup.name = "tempOperationGroup";
-  } // const tempOperationGroup = new THREE.Group();
-  // tempOperationGroup.name = "tempOperationGroup";
-
+  }
 
   var axis;
   var angle = 90;
@@ -10614,8 +10608,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 
     while (targetChildren.length) {
       tempOperationGroup.add(targetChildren.shift());
-    } // .forEach((child)=> {tempOperationGroup.attach(child)});
-
+    }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](1, 0, 0);
     angle = -90;
@@ -10626,8 +10619,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
-    } // .forEach((child)=>{tempOperationGroup.attach(child)});
-
+    }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](1, 0, 0);
     angle = -90;
@@ -10638,8 +10630,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
-    } // .forEach((child)=>{tempOperationGroup.attach(child)});
-
+    }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-1, 0, 0);
     angle = -90;
@@ -10650,8 +10641,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
-    } // .forEach((child)=>{tempOperationGroup.attach(child)});
-
+    }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-1, 0, 0);
     angle = -90;
@@ -10662,8 +10652,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
-    } // .forEach((child)=>{tempOperationGroup.attach(child)});
-
+    }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, -1);
     angle = 90;
@@ -10674,8 +10663,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
-    } // .forEach((child)=>{tempOperationGroup.attach(child)});
-
+    }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, -1);
     angle = 90;
@@ -10686,8 +10674,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
-    } // .forEach((child)=>{tempOperationGroup.attach(child)});
-
+    }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 1);
     angle = 90;
@@ -10698,8 +10685,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
-    } // .forEach((child)=>{tempOperationGroup.attach(child)});
-
+    }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 1);
     angle = 90;
@@ -10710,8 +10696,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
-    } // .forEach((child)=>{tempOperationGroup.attach(child)});
-
+    }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0);
     angle = -90;
@@ -10722,8 +10707,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
-    } // .forEach((child)=>{tempOperationGroup.attach(child)});		
-
+    }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0);
     angle = -90;
@@ -10734,8 +10718,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
-    } // .forEach((child)=>{tempOperationGroup.attach(child)});
-
+    }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, -1, 0);
     angle = -90;
@@ -10746,8 +10729,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
-    } // .forEach((child)=>{tempOperationGroup.attach(child)});
-
+    }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, -1, 0);
     angle = -90;
@@ -10758,15 +10740,14 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
-    } // .forEach((child)=>{tempOperationGroup.attach(child)});
-
+    }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](1, 0, 0);
     angle = 90;
   } else if (operationString.includes("E")) {
     targetChildren = this.children.filter(function (child) {
       return (child.name.match(/x/g) || []).length === 1 && (child.name.match(/r|b|l|f/g) || []).length === 2 || (child.name.match(/x/g) || []).length === 2 && /r|b|l|f/.test(child.name);
-    }); // .forEach((child)=>{tempOperationGroup.attach(child)});
+    });
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
@@ -10777,7 +10758,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
   } else if (operationString.includes("S")) {
     targetChildren = this.children.filter(function (child) {
       return (child.name.match(/x/g) || []).length === 1 && (child.name.match(/r|u|l|d/g) || []).length === 2 || (child.name.match(/x/g) || []).length === 2 && /r|u|l|d/.test(child.name);
-    }); // .forEach((child)=>{tempOperationGroup.attach(child)});
+    });
 
     while (targetChildren.length) {
       tempOperationGroup.attach(targetChildren.shift());
@@ -10858,9 +10839,9 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks() {
       };
       block.name = coordString; //init coord String
 
-      block.position.x = coordVector.x * _this2.options.size.width;
-      block.position.y = -coordVector.y * _this2.options.size.height;
-      block.position.z = coordVector.z * _this2.options.size.depth;
+      block.position.x = coordVector.x * _this2.options.size;
+      block.position.y = -coordVector.y * _this2.options.size;
+      block.position.z = coordVector.z * _this2.options.size;
 
       _this2._initMouseEventListener(block);
     });
@@ -11062,21 +11043,21 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
   var style = {
     width: this.options.fitment === "fully_fitted" ? "97%" : "92%",
     height: this.options.fitment === "fully_fitted" ? "97%" : "92%",
-    margin: this.options.fitment === "fully_fitted" ? "5px" : this.options.width * 0.3 + "px",
-    borderRadius: "30px"
+    margin: this.options.fitment === "fully_fitted" ? this.options.size * 0.015 + "px" : this.options.size * 0.03 + "px",
+    borderRadius: this.options.size * 0.1 + "px"
   };
   var element = block.element;
   sticker_coords.forEach(function (sc) {
     var face = element.getElementsByClassName(sc);
 
-    if (face.length) {
+    if (face.length && sc !== "x") {
       Object.assign(style, {
         backgroundColor: _this11.options.stickerColorSet[faceRotate(sc, idx % 4)]
       });
 
       if (_this11._stickers[stickerCoord]) {
         _this11._stickers[stickerCoord].forEach(function (radius) {
-          style[radius] = _this11.options.size.width * 0.3 + "px";
+          style[radius] = _this11.options.size * 0.3 + "px";
         });
       } else {
         style["borderRadius"] = "50% 50% 50% 50%";
@@ -11098,7 +11079,7 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
   Array.from(element.children).filter(function (el) {
     return !el.className.includes('z') && !el.className.includes('y') && !el.className.includes('x') && !el.className.includes('m') && !el.children.length;
   }).forEach(function (el) {
-    return el.style.zIndex = -3;
+    return el.style.zIndex = -1;
   }); // remove empty mirror
 
   Array.from(element.children).filter(function (el) {
