@@ -2,7 +2,10 @@
 > ## a extension THREE.CSS3DObject for making rubik's cube(only 333)
 
 ![grab-landing-page](https://github.com/lab89/three-rubiks-cube/blob/master/images/main.gif?raw=true)
-
+> ## install
+```
+npm i three-rubiks-cube
+```
 > ## execute example
 ```
 clone repository
