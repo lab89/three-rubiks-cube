@@ -49,13 +49,14 @@ console.log(cube.options)
 import RubiksCube from 'three-rubiks-cube'
 const cube = new RubiksCube({...})
     
-cube.cuberefreshCube() : refresh cube (block + sticker)
+cube.refreshCube() : refresh cube (block + sticker)
 cube.refreshStickers() : refresh sticker
 cube.refreshBlockColor() : refresh block
 cube.refreshMirrorSticker() : refresh mirror sticker
 cube.children : blocks array
 cube.operateWidthAnimation("RURU") : animation "RURU" operation every 1000ms(cube.options.animationDuration)
 cube.operate("RURU") : apply operation RURU without animation
+
 ```
    
 > ## usage
@@ -82,6 +83,11 @@ cube = new RubiksCube(
         animateDuration : 1000 // animation time
     });
 
+// after all animation completed (only call operateWidthAnimation)
+cube.addEventListener("operationCompleted", function(){				
+    console.log("operationCompleted!")
+    cube.refreshCube();
+})
 //change block color
 cube.option.blockColor = "~~"
 cube.refreshBlockColor();
