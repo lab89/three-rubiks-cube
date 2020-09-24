@@ -60,7 +60,7 @@ cube.refreshMirrorSticker() : refresh mirror sticker
 cube.children : blocks array
 cube.operateWidthAnimation("RURU") : animation "RURU" operation every 1000ms(cube.options.animationDuration)
 cube.operate("RURU") : apply operation RURU without animation
-
+cube.destroy() : destroy cube
 ```
    
 > ## usage(must be check example!)
