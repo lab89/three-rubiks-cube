@@ -10318,7 +10318,7 @@ var Cube333 = function Cube333(options) {
   };
 
   this.blurHandler = function () {
-    _this.isBlurTab = false;
+    _this.isBlurTab = true;
   };
 
   window.addEventListener('focus', this.focusHandler);

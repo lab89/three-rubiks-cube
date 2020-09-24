@@ -20,7 +20,7 @@ const Cube333 = function Cube333(options){
 		this.isBlurTab = false;
 	}
 	this.blurHandler = () => {
-		this.isBlurTab = false;
+		this.isBlurTab = true;
 	}
 	window.addEventListener('focus', this.focusHandler)
 	window.addEventListener('blur', this.blurHandler)
