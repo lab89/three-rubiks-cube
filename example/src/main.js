@@ -50,8 +50,10 @@ function init(){
 	cube.operate('xyz')
 	cube.operateWidthAnimation("F")	
 	setTimeout(()=>{
-		cube.options.blockColor = "green"
-		cube.refreshBlockColor();
+		cube.destroy();
+		console.log(scene);
+		// cube.options.blockColor = "green"
+		// cube.refreshBlockColor();
 		// cube.options.mirror =  !cube.options.mirror
 		// cube.refreshMirrorSticker();
 		// cube.options.stickerColorSet["f"] = "rgba(225, 10, 28, 1)";

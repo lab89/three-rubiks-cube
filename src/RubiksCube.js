@@ -116,7 +116,7 @@ const Cube333 = function Cube333(options){
 						tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);													
 						if(quad === 1){		
 							cancelAnimationFrame(this.animationID);
-							this.animationId = null;
+							this.animationID = null;
 							this.animationEnabled = true;							
 							this._operator(this._operationsArray[event.index], tempOperationGroup);										
 							this.dispatchEvent({type : "operation", index : event.index + 1});
@@ -497,7 +497,10 @@ Cube333.prototype.operateWidthAnimation = function operateWidthAnimation(operati
 };
 Cube333.prototype._refreshBlocks = function _refreshBlocks(){
 
-	cancelAnimationFrame(this.animationID);
+	cancelAnimationFrame(this.animationID);	
+	this.animationID = null;
+	this.animationEnabled = true;
+
 	let tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");	
 	if(tempOperationGroup){
 		if(tempOperationGroup.children.length){
@@ -670,6 +673,7 @@ Cube333.prototype.operate = function operate(operations){
 }
 Cube333.prototype.destroy = function destroy(){
 	cancelAnimationFrame(this.animationID);
+	this.animationID = null;
 	let tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");	
 	if(tempOperationGroup){
 		if(tempOperationGroup.children.length){
@@ -681,7 +685,7 @@ Cube333.prototype.destroy = function destroy(){
 		tempOperationGroup.rotation.y = 0;
 		tempOperationGroup.rotation.z = 0;
 	}
-
+	
 	while(this.children.length){
 		const block = this.children.shift()
 		block.element.remove();		
@@ -693,7 +697,10 @@ Cube333.prototype.destroy = function destroy(){
 	window.removeEventListener('blur', this.blurHandler);
 	window.removeEventListener('focus', this.focusHandler);	
 
+	this.parent.remove(tempOperationGroup);
 	this.parent.remove(this);
+	
+	this._blockObjets = [];
 }
 const RubiksCube = function(options){
 	Cube333.apply(this, [options]);

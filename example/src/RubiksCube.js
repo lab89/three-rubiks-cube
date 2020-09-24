@@ -10388,7 +10388,7 @@ var Cube333 = function Cube333(options) {
 
             if (quad === 1) {
               cancelAnimationFrame(this.animationID);
-              this.animationId = null;
+              this.animationID = null;
               this.animationEnabled = true;
 
               this._operator(this._operationsArray[event.index], tempOperationGroup);
@@ -10836,6 +10836,8 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks() {
   var _this2 = this;
 
   cancelAnimationFrame(this.animationID);
+  this.animationID = null;
+  this.animationEnabled = true;
   var tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
 
   if (tempOperationGroup) {
@@ -11043,6 +11045,7 @@ Cube333.prototype.operate = function operate(operations) {
 
 Cube333.prototype.destroy = function destroy() {
   cancelAnimationFrame(this.animationID);
+  this.animationID = null;
   var tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
 
   if (tempOperationGroup) {
@@ -11068,7 +11071,9 @@ Cube333.prototype.destroy = function destroy() {
 
   window.removeEventListener('blur', this.blurHandler);
   window.removeEventListener('focus', this.focusHandler);
+  this.parent.remove(tempOperationGroup);
   this.parent.remove(this);
+  this._blockObjets = [];
 };
 
 var RubiksCube = function RubiksCube(options) {
