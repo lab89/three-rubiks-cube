@@ -10311,7 +10311,20 @@ var Cube333 = function Cube333(options) {
   console.log("%c ENJOY RUBIKS CUBE!", 'background: #222; color: #bada55');
   console.log("%c MADE BY HONG", 'background: #222; color: cyan');
   console.log("**********************************");
+  this.isBlurTab = false;
+
+  this.focusHandler = function () {
+    _this.isBlurTab = false;
+  };
+
+  this.blurHandler = function () {
+    _this.isBlurTab = false;
+  };
+
+  window.addEventListener('focus', this.focusHandler);
+  window.addEventListener('blur', this.blurHandler);
   this.animationEnabled = true;
+  this.animationID = null;
   this.options = options;
   this._coordInfo = {
     x: 0,
@@ -10360,6 +10373,7 @@ var Cube333 = function Cube333(options) {
 
       var animation = function animation(timestamp) {
         if (!start) start = timestamp;
+        if (this.isBlurTab) start = timestamp;else this.isBlurTab = false;
         var progress = timestamp - start;
 
         if (progress < this.options.animateDuration && progress > 0) {
@@ -10369,6 +10383,8 @@ var Cube333 = function Cube333(options) {
             tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);
 
             if (quad === 1) {
+              cancelAnimationFrame(this.animationID);
+              this.animationId = null;
               this.animationEnabled = true;
 
               this._operator(this._operationsArray[event.index], tempOperationGroup);
@@ -10382,7 +10398,7 @@ var Cube333 = function Cube333(options) {
           }
         }
 
-        window.requestAnimationFrame(animation.bind(this));
+        this.animationID = window.requestAnimationFrame(animation.bind(this));
       };
 
       this.animationEnabled = false;
@@ -10413,7 +10429,7 @@ var Cube333 = function Cube333(options) {
 
       tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
       var start = null;
-      animation.call(this);
+      this.animationID = window.requestAnimationFrame(animation.bind(this));
     }
   }.bind(this));
 };
@@ -10998,6 +11014,21 @@ Cube333.prototype.operate = function operate(operations) {
 
     this.parent.remove(tempOperationGroup);
   }
+};
+
+Cube333.prototype.destroy = function destroy() {
+  while (this.children.length) {
+    var block = this.children.shift();
+    block.element.remove();
+    block.removeEventListener('click');
+    block.removeEventListener('mouseover');
+    block.removeEventListener('mouseout');
+    this.remove(block); // remove block
+  }
+
+  window.removeEventListener('blur', this.blurHandler);
+  window.removeEventListener('focus', this.focusHandler);
+  this.parent.remove(this);
 };
 
 var RubiksCube = function RubiksCube(options) {

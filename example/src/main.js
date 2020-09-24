@@ -47,7 +47,7 @@ function init(){
 		cube.refreshCube();
 	});		
 	cube.operate('xyz')
-	cube.operateWidthAnimation("FBUDRLSEMxyzz'y'x'M'E'S'L'R'D'U'B'F'fbudrll'r'd'u'b'f'")	
+	cube.operateWidthAnimation("FBUDRL")	
 	
 	controls = new OrbitControls(camera, renderer.domElement);
 	controls.enableZoom = true;

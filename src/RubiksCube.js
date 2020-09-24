@@ -13,7 +13,20 @@ const Cube333 = function Cube333(options){
 	console.log("%c ENJOY RUBIKS CUBE!", 'background: #222; color: #bada55')
 	console.log("%c MADE BY HONG", 'background: #222; color: cyan')
 	console.log("**********************************")
+
+	this.isBlurTab = false;
+	
+	this.focusHandler = () => {
+		this.isBlurTab = false;
+	}
+	this.blurHandler = () => {
+		this.isBlurTab = false;
+	}
+	window.addEventListener('focus', this.focusHandler)
+	window.addEventListener('blur', this.blurHandler)
+	
 	this.animationEnabled = true;
+	this.animationID = null;
 	this.options = options;
 	this._coordInfo = {
 		x : 0,
@@ -90,23 +103,26 @@ const Cube333 = function Cube333(options){
 			let start = null;
 			function animation(timestamp){
 				if (!start) start = timestamp;
+				if(this.isBlurTab) start = timestamp;
+				else this.isBlurTab = false;
 				const progress = timestamp - start;
 				if (progress < this.options.animateDuration && progress > 0) {	
 					const quad = inOutQuad(progress / 1000);
 					if(quad <= 1){
 						tempOperationGroup.setRotationFromAxisAngle(operationInfo.axis, inOutQuad(progress / 1000) * operationInfo.angle * Math.PI / 180);													
-						if(quad === 1){							
-							this.animationEnabled = true;
-							
+						if(quad === 1){		
+							cancelAnimationFrame(this.animationID);
+							this.animationId = null;
+							this.animationEnabled = true;							
 							this._operator(this._operationsArray[event.index], tempOperationGroup);										
 							this.dispatchEvent({type : "operation", index : event.index + 1});
 							return;
 						}
 					}					
 				}				
-				window.requestAnimationFrame(animation.bind(this));
+				this.animationID = window.requestAnimationFrame(animation.bind(this));
 			}
-			animation.call(this);
+			this.animationID  = window.requestAnimationFrame(animation.bind(this));
 		}
 		
 	}.bind(this))
@@ -632,7 +648,20 @@ Cube333.prototype.operate = function operate(operations){
 		this.parent.remove(tempOperationGroup);
 	}
 }
+Cube333.prototype.destroy = function destroy(){
+	while(this.children.length){
+		const block = this.children.shift()
+		block.element.remove();		
+		block.removeEventListener('click');
+		block.removeEventListener('mouseover');
+		block.removeEventListener('mouseout');
+		this.remove(block) // remove block
+	}
+	window.removeEventListener('blur', this.blurHandler);
+	window.removeEventListener('focus', this.focusHandler);	
 
+	this.parent.remove(this);
+}
 const RubiksCube = function(options){
 	Cube333.apply(this, [options]);
 	this._stickers = {
@@ -709,5 +738,6 @@ RubiksCube.prototype._attachSticker = function _attachSticker(realCoord, sticker
 		.filter((el)=> el.className.includes('m') && el.children.length === 0)
 		.forEach((el)=> el.remove());
 };
+
 
 export default RubiksCube ;
