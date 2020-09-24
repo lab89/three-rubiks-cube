@@ -44,11 +44,19 @@ function init(){
 	scene.add(cube);	
 	cube.addEventListener("operationCompleted", function(){				
 		console.log("operationCompleted!")
-		cube.refreshCube();
+		cube.options.blockColor = "red"
+		cube.refreshBlockColor();
 	});		
 	cube.operate('xyz')
-	cube.operateWidthAnimation("FBUDRL")	
-	
+	cube.operateWidthAnimation("F")	
+	setTimeout(()=>{
+		cube.options.blockColor = "green"
+		cube.refreshBlockColor();
+		// cube.options.mirror =  !cube.options.mirror
+		// cube.refreshMirrorSticker();
+		// cube.options.stickerColorSet["f"] = "rgba(225, 10, 28, 1)";
+		// cube.refreshStickers(); 
+	},1300)
 	controls = new OrbitControls(camera, renderer.domElement);
 	controls.enableZoom = true;
 	controls.enablePan = false;

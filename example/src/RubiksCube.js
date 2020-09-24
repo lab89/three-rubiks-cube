@@ -10321,6 +10321,7 @@ var Cube333 = function Cube333(options) {
     _this.isBlurTab = true;
   };
 
+  this._blockObjets = null;
   window.addEventListener('focus', this.focusHandler);
   window.addEventListener('blur', this.blurHandler);
   this.animationEnabled = true;
@@ -10360,6 +10361,9 @@ var Cube333 = function Cube333(options) {
     });
   });
 
+  this._blockObjets = this.children.map(function (d) {
+    return d;
+  });
   this._operationsArray = [];
   this.addEventListener("operation", function (event) {
     //그룹 없애기		
@@ -10831,6 +10835,21 @@ Cube333.prototype.operateWidthAnimation = function operateWidthAnimation(operati
 Cube333.prototype._refreshBlocks = function _refreshBlocks() {
   var _this2 = this;
 
+  cancelAnimationFrame(this.animationID);
+  var tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+
+  if (tempOperationGroup) {
+    if (tempOperationGroup.children.length) {
+      while (tempOperationGroup.children.length) {
+        this.attach(tempOperationGroup.children.shift());
+      }
+    }
+
+    tempOperationGroup.rotation.x = 0;
+    tempOperationGroup.rotation.y = 0;
+    tempOperationGroup.rotation.z = 0;
+  }
+
   while (this.children.length) {
     var block = this.children.shift();
     block.element.remove();
@@ -10862,13 +10881,18 @@ Cube333.prototype._refreshBlocks = function _refreshBlocks() {
       _this2._initMouseEventListener(block);
     });
   });
+
+  this._blockObjets = this.children.map(function (d) {
+    return d;
+  });
 };
 
 Cube333.prototype.refreshMirrorSticker = function refreshMirrorSticker() {
   var _this3 = this;
 
   var faces = ["f", "b", "u", "d", "l", "r"];
-  this.children.forEach(function (child) {
+
+  this._blockObjets.forEach(function (child) {
     faces.forEach(function (face) {
       var result = child.element.getElementsByClassName("m" + face);
 
@@ -10941,11 +10965,12 @@ Cube333.prototype.refreshCube = function refreshCube() {
 Cube333.prototype.refreshStickers = function refreshStickers() {
   var _this7 = this;
 
-  var faces = this.children.map(function (child) {
+  var faces = this._blockObjets.map(function (child) {
     return Array.from(child.element.children).filter(function (childEl) {
       return !childEl.className.includes("x") && !childEl.className.includes("y") && !childEl.className.includes("z");
     });
   });
+
   var facesString = ["f", "b", "u", "d", "r", "l"];
   faces.forEach(function (face) {
     face.forEach(function (child) {
@@ -10963,7 +10988,7 @@ Cube333.prototype.refreshStickers = function refreshStickers() {
 Cube333.prototype.refreshBlockColor = function refreshBlockColor() {
   var _this8 = this;
 
-  var faces = this.children.forEach(function (child) {
+  var faces = this._blockObjets.forEach(function (child) {
     if (!child.userData.clicked) {
       Array.from(child.element.children).forEach(function (childEl) {
         if (!childEl.className.includes('m')) childEl.style.backgroundColor = _this8.options.blockColor;
@@ -11017,6 +11042,21 @@ Cube333.prototype.operate = function operate(operations) {
 };
 
 Cube333.prototype.destroy = function destroy() {
+  cancelAnimationFrame(this.animationID);
+  var tempOperationGroup = this.parent.getObjectByName("tempOperationGroup");
+
+  if (tempOperationGroup) {
+    if (tempOperationGroup.children.length) {
+      while (tempOperationGroup.children.length) {
+        this.attach(tempOperationGroup.children.shift());
+      }
+    }
+
+    tempOperationGroup.rotation.x = 0;
+    tempOperationGroup.rotation.y = 0;
+    tempOperationGroup.rotation.z = 0;
+  }
+
   while (this.children.length) {
     var block = this.children.shift();
     block.element.remove();
