@@ -14,13 +14,13 @@ const Cube333 = function Cube333(options){
 	console.log("%c MADE BY HONG", 'background: #222; color: cyan')
 	console.log("**********************************")
 
-	this.isBlurTab = false;
+	this._isBlurTab = false;
 	
 	this.focusHandler = () => {
-		this.isBlurTab = false;
+		this._isBlurTab = false;
 	}
 	this.blurHandler = () => {
-		this.isBlurTab = true;
+		this._isBlurTab = true;
 	}
 
 	this._blockObjets = null;
@@ -107,8 +107,8 @@ const Cube333 = function Cube333(options){
 			let start = null;
 			function animation(timestamp){
 				if (!start) start = timestamp;
-				if(this.isBlurTab) start = timestamp;
-				else this.isBlurTab = false;
+				if(this._isBlurTab) start = timestamp;
+				else this._isBlurTab = false;
 				const progress = timestamp - start;
 				if (progress < this.options.animateDuration && progress > 0) {	
 					const quad = inOutQuad(progress / 1000);

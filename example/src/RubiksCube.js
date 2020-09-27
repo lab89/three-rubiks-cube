@@ -10311,14 +10311,14 @@ var Cube333 = function Cube333(options) {
   console.log("%c ENJOY RUBIKS CUBE!", 'background: #222; color: #bada55');
   console.log("%c MADE BY HONG", 'background: #222; color: cyan');
   console.log("**********************************");
-  this.isBlurTab = false;
+  this._isBlurTab = false;
 
   this.focusHandler = function () {
-    _this.isBlurTab = false;
+    _this._isBlurTab = false;
   };
 
   this.blurHandler = function () {
-    _this.isBlurTab = true;
+    _this._isBlurTab = true;
   };
 
   this._blockObjets = null;
@@ -10377,7 +10377,7 @@ var Cube333 = function Cube333(options) {
 
       var animation = function animation(timestamp) {
         if (!start) start = timestamp;
-        if (this.isBlurTab) start = timestamp;else this.isBlurTab = false;
+        if (this._isBlurTab) start = timestamp;else this._isBlurTab = false;
         var progress = timestamp - start;
 
         if (progress < this.options.animateDuration && progress > 0) {
