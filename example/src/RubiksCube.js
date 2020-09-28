@@ -10785,7 +10785,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
     }
 
     axis = new three__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 1);
-    angle = 90;
+    angle = -90;
   } else if (operationString.includes("x")) {
     while (this.children.length) {
       tempOperationGroup.attach(this.children.shift());

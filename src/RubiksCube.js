@@ -456,7 +456,7 @@ Cube333.prototype._makeOperationInfo = function getOperationBlockGroup(operation
 			tempOperationGroup.attach(targetChildren.shift())
 		}
 		axis = new THREE.Vector3(0, 0, 1);
-		angle = 90;
+		angle = -90;
 	}else if(operationString.includes("x")){	
 		while(this.children.length){
 			tempOperationGroup.attach(this.children.shift())

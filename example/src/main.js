@@ -41,16 +41,10 @@ function init(){
 			animateDuration : 1000
 		});
 	
-	scene.add(cube);	
-	
-	cube.addEventListener("operationCompleted", function(){				
-		console.log("operationCompleted!")
-		cube.options.blockColor = "red"
-		cube.refreshBlockColor();
-	});		
+	scene.add(cube);		
 
-	cube.operate('xyz')
-	cube.operateWidthAnimation("F")	
+	cube.operateWidthAnimation("UDRLFBudrlfbxyzMESS'E'M'z'y'x'b'f'l'r'd'u'B'F'L'R'D'U'")
+	
 	
 	controls = new OrbitControls(camera, renderer.domElement);
 	controls.enableZoom = true;
