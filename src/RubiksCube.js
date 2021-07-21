@@ -42,19 +42,32 @@ const Cube333 = function Cube333(options){
 	};
 
 	this._blocks = [
-		["luf", "ruf", "rub", "lub"],
-		["ldf", "rdf", "rdb", "ldb"],
-		["lxf", "rxf", "rxb", "lxb"],
-		["xdf", "rdx", "xdb", "ldx"],
-		["xuf", "rux", "xub", "lux"],
-		["xxf", "rxx", "xxb", "lxx"],
-		["xux"],
-		["xdx"]
+		["l/u/f", "r/u/f", "r/u/b", "l/u/b"],
+		["l/d/f", "r/d/f", "r/d/b", "l/d/b"],
+		["l/x/f", "r/x/f", "r/x/b", "l/x/b"],
+		["x/d/f", "r/d/x", "x/d/b", "l/d/x"],
+		["x/u/f", "r/u/x", "x/u/b", "l/u/x"],
+		["x/x/f", "r/x/x", "x/x/b", "l/x/x"],
+		["x/u/x"],
+		["x/d/x"]
 	];
+  /**444
+   * ["l/u/f", "r/u/f", "r/u/b", "l/u/b"],
+   * ["l/x-/f", "r/x-/f","r/x-/b", "l/x-/b"]
+   * ["l/x+/f", "r/x+/f", "r/x+/b", "l/x+/b"]
+   */
+  /**555
+   * ["l/u/f", "r/u/f", "r/u/b", "l/u/b"],
+   * ["l/x--/f", "r/x--/f", "r/x--/b", "l/x--/b"]
+   * ["l/x-/f", "r/x-/f", "r/x-/b", "l/x-/b"]
+   * ["l/x/f", "r/x/f", "r/x/b", "l/x/b"]
+   * ["l/x+/f", "r/x+/f", "r/x+/b", "l/x+/b"]
+   * ["l/x++/f", "r/x++/f", "r/x++/b", "l/x++/b"]
+   */
 
 	this._blocks.forEach((coordsArr)=>{
 		coordsArr.forEach((coordString)=>{
-			const coords = coordString.split("");
+			const coords = coordString.split("/");
 			const coordVector = new THREE.Vector3(this._coordInfo[coords[0]], this._coordInfo[coords[1]], this._coordInfo[coords[2]]);
 			const block = this._createBlock(coordVector);			
 			this.add(block);

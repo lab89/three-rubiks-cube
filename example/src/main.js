@@ -51,6 +51,8 @@ function init(){
 	controls.enablePan = false;
 	controls.minDistance = 500;
 	controls.maxDistance = 10000;
+  
+  window.addEventListener('resize', onWindowResize)
 }
 
 function onWindowResize() {
