@@ -13,7 +13,7 @@
   "dependencies": {
     "clean-webpack-plugin": "^3.0.0",
     "html-webpack-plugin": "^4.3.0",
-    "three": "^0.119.1",
+    "three": "^0.137.0",
     "three-rubiks-cube": "file:..",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
